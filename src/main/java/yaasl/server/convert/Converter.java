@@ -1,6 +1,8 @@
 package yaasl.server.convert;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import yaasl.server.jsonapi.Element;
+import yaasl.server.jsonapi.SingleData;
 import yaasl.server.model.Aircraft;
 import yaasl.server.model.Flight;
 import yaasl.server.model.Pilot;
@@ -22,13 +24,13 @@ public class Converter {
         element.setId(flight.getId().toString());
         element.setType("flight");
         if (flight.getAircraft() != null) {
-            element.addAttribute("aircraft", flight.getAircraft());
+            element.addRelationship("aircraft", new SingleData(convert(flight.getAircraft(), false)));
         }
         if (flight.getPilot1() != null) {
-            element.addAttribute("pilot1", flight.getPilot1());
+            element.addRelationship("pilot1", new SingleData(convert(flight.getPilot1(), false)));
         }
         if (flight.getPilot2() != null) {
-            element.addAttribute("pilot2", flight.getPilot2());
+            element.addRelationship("pilot2", new SingleData(convert(flight.getPilot2(), false)));
         }
         if (flight.getStartTime() != null) {
             element.addAttribute("start-time", flight.getStartTime().toString());
@@ -39,21 +41,15 @@ public class Converter {
         return element;
     }
 
-    public static Flight convert(Element data) throws Exception {
+    public static Flight convert(Element element) throws Exception {
         Flight flight = new Flight();
-        if (data.getId() != null) {
-            flight.setId(parseLong(data.getId()));
+        if (element.getId() != null) {
+            flight.setId(parseLong(element.getId()));
         }
-        Map<String, Object> attributes = data.getAttributes();
-        if (attributes.get("aircraft") != null) {
-            flight.setAircraft(convertAircraft((HashMap<String, Object>) attributes.get("aircraft")));
-        }
-        if (attributes.get("pilot1") != null) {
-            flight.setPilot1(convertPilot((HashMap<String, Object>) attributes.get("pilot1")));
-        }
-        if (attributes.get("pilot2") != null) {
-            flight.setPilot2(convertPilot((HashMap<String, Object>) attributes.get("pilot2")));
-        }
+        flight.setAircraft(convertAircraft(getRelationship("aircraft", element)));
+        flight.setPilot1(convertPilot(getRelationship("pilot1", element)));
+        flight.setPilot2(convertPilot(getRelationship("pilot2", element)));
+        Map<String, Object> attributes = element.getAttributes();
         if (attributes.get("start-time") != null) {
             flight.setStartTime(OffsetDateTime.parse((String) attributes.get("start-time")));
         }
@@ -63,48 +59,64 @@ public class Converter {
         return flight;
     }
 
-    private static Aircraft convertAircraft(HashMap<String, Object> json) throws IOException {
-        Aircraft aircraft = new Aircraft();
-        if (json.get("_id") != null) {
-            aircraft.setId(((Integer) json.get("_id")).longValue());
+    private static Aircraft convertAircraft(Map<String, Object> json) throws IOException {
+        if (json != null) {
+            Aircraft aircraft = new Aircraft();
+            aircraft.setId(parseLong((String) ((Map<String, Object>) json.get("data")).get("id")));
+            return aircraft;
+        } else {
+            return null;
         }
-        if (json.get("id") != null) {
-            aircraft.setId(((Integer) json.get("id")).longValue());
-        }
-        aircraft.setCallSign((String) json.get("callSign"));
-        aircraft.setNumberOfSeats((Integer) json.get("numberOfSeats"));
-        return aircraft;
     }
 
-    private static Pilot convertPilot(HashMap<String, Object> json) throws IOException {
-        Pilot pilot = new Pilot();
-        if (json.get("_id") != null) {
-            pilot.setId(((Integer) json.get("_id")).longValue());
+    private static Pilot convertPilot(Map<String, Object> json) throws IOException {
+        if (json != null) {
+            Pilot pilot = new Pilot();
+            pilot.setId(parseLong((String) ((Map<String, Object>) json.get("data")).get("id")));
+            return pilot;
+        } else {
+            return null;
         }
-        if (json.get("id") != null) {
-            pilot.setId(((Integer) json.get("id")).longValue());
-        }
-        pilot.setName((String) json.get("name"));
-        return pilot;
     }
 
     public static Element convert(Pilot pilot) {
+        return convert(pilot, true);
+    }
+
+    public static Element convert(Pilot pilot, boolean includeAttributes) {
         Element element = new Element();
         element.setId(pilot.getId().toString());
         element.setType("pilot");
-        element.getAttributes().put("-id", pilot.getId());
-        element.getAttributes().put("name", pilot.getName());
+        if (includeAttributes) {
+            element.addAttribute("name", pilot.getName());
+        }
         return element;
     }
 
     public static Element convert(Aircraft aircraft) {
+        return convert(aircraft, true);
+    }
+
+    public static Element convert(Aircraft aircraft, boolean includeAttributes) {
         Element element = new Element();
         element.setId(aircraft.getId().toString());
         element.setType("aircraft");
-        element.getAttributes().put("-id", aircraft.getId());
-        element.getAttributes().put("call-sign", aircraft.getCallSign());
-        element.getAttributes().put("number-of-seats", aircraft.getNumberOfSeats());
+        if (includeAttributes) {
+            element.addAttribute("call-sign", aircraft.getCallSign());
+            element.addAttribute("number-of-seats", aircraft.getNumberOfSeats());
+        }
         return element;
+    }
+
+    private static Map<String, Object> getRelationship(String name, Element element) {
+        if (element.getRelationships() != null) {
+            for (Map.Entry<String, Object> relationship : element.getRelationships().entrySet()) {
+                if (name.equals(relationship.getKey())) {
+                    return (Map<String, Object>) relationship.getValue();
+                }
+            }
+        }
+        return null;
     }
 
 }

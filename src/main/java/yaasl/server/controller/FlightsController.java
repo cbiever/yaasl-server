@@ -11,6 +11,7 @@ import yaasl.server.jsonapi.MultiData;
 import yaasl.server.jsonapi.SingleData;
 import yaasl.server.model.Flight;
 import yaasl.server.model.Update;
+import yaasl.server.persistence.AircraftRepository;
 import yaasl.server.persistence.FlightsRepository;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
