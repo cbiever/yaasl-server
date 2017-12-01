@@ -9,12 +9,15 @@ import yaasl.server.model.Flight;
 import yaasl.server.model.Update;
 import yaasl.server.persistence.FlightsRepository;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static yaasl.server.convert.Converter.addMinutes;
 import static yaasl.server.convert.Converter.convert;
 
 @Component
@@ -31,7 +34,7 @@ public class EventGenerator {
     @Scheduled(fixedRate = 30000)
     public void generateEvent() {
         List<Flight> flights = getAllFlights();
-        OffsetDateTime now = OffsetDateTime.now();
+        Date now = new Date();
 
         if (Math.random() < 0.3) {
             List<Flight> allFlightsWithoutStartTime = flights
@@ -57,7 +60,7 @@ public class EventGenerator {
             if (!allFlightsWithoutLandingTime.isEmpty()) {
                 int i = (int) Math.round(Math.random() * (allFlightsWithoutLandingTime.size() - 1));
                 Flight flight = allFlightsWithoutLandingTime.get(i);
-                if (flight.getStartTime().isBefore(now.minusMinutes(4))) {
+                if (flight.getStartTime().before(addMinutes(now, -4))) {
                     flight.setLandingTime(now);
                     flightsRepository.save(flight);
                     Update update = new Update("update", convert(flight));

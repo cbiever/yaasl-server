@@ -4,19 +4,26 @@ import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import yaasl.server.Broadcaster;
 import yaasl.server.jsonapi.MultiData;
 import yaasl.server.jsonapi.SingleData;
 import yaasl.server.model.Flight;
+import yaasl.server.model.Location;
 import yaasl.server.model.Update;
-import yaasl.server.persistence.AircraftRepository;
 import yaasl.server.persistence.FlightsRepository;
+import yaasl.server.persistence.LocationRepository;
+
+import java.util.*;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static yaasl.server.convert.Converter.addDays;
 import static yaasl.server.convert.Converter.convert;
+import static yaasl.server.convert.Converter.parseDate;
 
 @RestController
 @RequestMapping("/rs/flights")
@@ -28,6 +35,9 @@ public class FlightsController {
     private FlightsRepository flightsRepository;
 
     @Autowired
+    private LocationRepository locationRepository;
+
+    @Autowired
     private Broadcaster broadcaster;
 
     @ApiOperation(value = "getFlights", nickname = "getFlights")
@@ -36,14 +46,32 @@ public class FlightsController {
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 422, message = "Unprocessable Entity"),
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(method = GET, produces = "application/vnd.api+json")
-    public MultiData getFlights(@RequestParam(value = "date", defaultValue = "now") String date) {
+    public ResponseEntity<MultiData> getFlights(@RequestParam("filter[location]") Optional<String> locationFilter, @RequestParam("filter[date]") Optional<String> dateFilter) {
         MultiData data = new MultiData();
-        flightsRepository
-                .findAll()
-                .forEach(flight -> data.getData().add(convert(flight)));
-        return data;
+        if (locationFilter.isPresent() && dateFilter.isPresent()) {
+            Location location = locationRepository.findByName(locationFilter.get().toUpperCase());
+            Date date = parseDate(dateFilter.get());
+            if (date == null) {
+                return ResponseEntity.status(UNPROCESSABLE_ENTITY).build();
+            }
+            List<Flight> flights = flightsRepository.findFlights(location, date, addDays(date, 1));
+            flights.forEach(flight -> data.getData().add(convert(flight)));
+        }
+        else if (locationFilter.isPresent()) {
+            Location location = locationRepository.findByName(locationFilter.get().toUpperCase());
+            flightsRepository
+                    .findByLocation(location)
+                    .forEach(flight -> data.getData().add(convert(flight)));
+        }
+        else {
+            flightsRepository
+                    .findAll()
+                    .forEach(flight -> data.getData().add(convert(flight)));
+        }
+        return ResponseEntity.ok(data);
     }
 
     @ApiOperation(value = "addFlight", nickname = "addFlight")
@@ -54,7 +82,7 @@ public class FlightsController {
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(method = POST)
-    public ResponseEntity<SingleData> addFlight(@RequestBody SingleData data, @RequestHeader(value="Originator-id") String originatorId) {
+    public ResponseEntity<SingleData> addFlight(@RequestBody SingleData data, @RequestHeader(value="X-Originator-ID") String originatorId) {
         try {
             Flight flight = convert(data.getData());
             flightsRepository.save(flight);
@@ -76,7 +104,7 @@ public class FlightsController {
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(value="/{id}", method = PATCH)
-    public ResponseEntity<SingleData> updateFlight(@PathVariable("id") Long id, @RequestBody SingleData data, @RequestHeader(value="Originator-id") String originatorId) {
+    public ResponseEntity<SingleData> updateFlight(@PathVariable("id") Long id, @RequestBody SingleData data, @RequestHeader(value="X-Originator-ID") String originatorId) {
         try {
             Flight flight = convert(data.getData());
             flightsRepository.save(flight);
@@ -98,7 +126,7 @@ public class FlightsController {
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(value="/{id}", method = DELETE)
-    public ResponseEntity<SingleData> deleteFlight(@PathVariable("id") Long id, @RequestHeader(value="Originator-id") String originatorId) {
+    public ResponseEntity<SingleData> deleteFlight(@PathVariable("id") Long id, @RequestHeader(value="X-Originator-ID") String originatorId) {
         Flight flight = flightsRepository.findOne(id);
         if (flight != null) {
             flightsRepository.delete(id);

@@ -13,7 +13,6 @@ public class Pilot {
     private Long id;
     private String name;
     private PilotRole role;
-    private boolean frontSeat;
 //    private Set<Flight> flights;
 
     public Pilot() {
@@ -47,14 +46,6 @@ public class Pilot {
 
     public void setRole(PilotRole role) {
         this.role = role;
-    }
-
-    public boolean isFrontSeat() {
-        return frontSeat;
-    }
-
-    public void setFrontSeat(boolean frontSeat) {
-        this.frontSeat = frontSeat;
     }
 
 //    @OneToMany(mappedBy = "flight", cascade = ALL)

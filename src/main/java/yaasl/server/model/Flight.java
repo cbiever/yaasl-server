@@ -1,8 +1,12 @@
 package yaasl.server.model;
 
+import org.apache.tomcat.jni.Local;
+
 import javax.persistence.*;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 import static javax.persistence.GenerationType.AUTO;
@@ -11,11 +15,12 @@ import static javax.persistence.GenerationType.AUTO;
 public class Flight {
 
     private Long id;
+    private Location location;
     private Aircraft aircraft;
     private Pilot pilot1;
     private Pilot pilot2;
-    private OffsetDateTime startTime;
-    private OffsetDateTime landingTime;
+    private Date startTime;
+    private Date landingTime;
 
     public Flight() {
     }
@@ -28,6 +33,16 @@ public class Flight {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @ManyToOne
+    @JoinColumn(name="location_id")
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     @ManyToOne
@@ -60,19 +75,19 @@ public class Flight {
         this.pilot2 = pilot2;
     }
 
-    public OffsetDateTime getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(OffsetDateTime startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
-    public OffsetDateTime getLandingTime() {
+    public Date getLandingTime() {
         return landingTime;
     }
 
-    public void setLandingTime(OffsetDateTime landingTime) {
+    public void setLandingTime(Date landingTime) {
         this.landingTime = landingTime;
     }
 
