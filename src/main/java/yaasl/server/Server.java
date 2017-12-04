@@ -18,10 +18,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import yaasl.server.controller.AircraftController;
 import yaasl.server.jsonapi.MultiData;
-import yaasl.server.model.Aircraft;
-import yaasl.server.model.Flight;
-import yaasl.server.model.Location;
-import yaasl.server.model.Pilot;
+import yaasl.server.model.*;
 import yaasl.server.persistence.AircraftRepository;
 import yaasl.server.persistence.FlightsRepository;
 import yaasl.server.persistence.LocationRepository;
@@ -57,79 +54,101 @@ public class Server {
 
     @PostConstruct
     public void init() {
-        locationRepository.save(new Location("LSZB"));
-        locationRepository.save(new Location("LSZW"));
-        locationRepository.save(new Location("LSTB"));
+        if (locationRepository.count() == 0) {
+            locationRepository.save(new Location("LSZB"));
+            locationRepository.save(new Location("LSZW"));
+            locationRepository.save(new Location("LSTB"));
 
-        aircraftRepository.save(new Aircraft("HB-1766", 2));
-        aircraftRepository.save(new Aircraft("HB-1811", 2));
-        aircraftRepository.save(new Aircraft("HB-3131", 2));
-        aircraftRepository.save(new Aircraft("HB-3362", 2));
-        aircraftRepository.save(new Aircraft("HB-3411", 2));
-        aircraftRepository.save(new Aircraft("HB-3022", 1));
-        aircraftRepository.save(new Aircraft("HB-3043", 1));
-        aircraftRepository.save(new Aircraft("HB-3299", 1));
-        aircraftRepository.save(new Aircraft("HB-3447", 1));
-        aircraftRepository.save(new Aircraft("HB-3453", 1));
+            aircraftRepository.save(new Aircraft("HB-1766", false, 2));
+            aircraftRepository.save(new Aircraft("HB-1811", false, 2));
+            aircraftRepository.save(new Aircraft("HB-3131", false, 2));
+            aircraftRepository.save(new Aircraft("HB-3362", false, 2));
+            aircraftRepository.save(new Aircraft("HB-3411", false, 2));
+            aircraftRepository.save(new Aircraft("HB-3022", false, 1));
+            aircraftRepository.save(new Aircraft("HB-3043", false, 1));
+            aircraftRepository.save(new Aircraft("HB-3299", false, 1));
+            aircraftRepository.save(new Aircraft("HB-3447", false, 1));
+            aircraftRepository.save(new Aircraft("HB-3453", false, 1));
 
-        pilotsRepository.save(new Pilot("Han Solo"));
-        pilotsRepository.save(new Pilot("Chewbacca"));
-        pilotsRepository.save(new Pilot("Luke Skywalker"));
-        pilotsRepository.save(new Pilot("Jabba the Hutt"));
+            aircraftRepository.save(new Aircraft("HB-HHO", true, 4));
+            aircraftRepository.save(new Aircraft("HB-2377", true, 2));
 
-        pilotsRepository.save(new Pilot("Black Mamba"));
-        pilotsRepository.save(new Pilot("Bill"));
-        pilotsRepository.save(new Pilot("Hattori Hanzo"));
-        pilotsRepository.save(new Pilot("O-Ren Ishii"));
-        pilotsRepository.save(new Pilot("Gogo Yubari"));
+            pilotsRepository.save(new Pilot("Han Solo"));
+            pilotsRepository.save(new Pilot("Chewbacca"));
+            pilotsRepository.save(new Pilot("Luke Skywalker"));
+            pilotsRepository.save(new Pilot("Jabba the Hutt"));
 
-        pilotsRepository.save(new Pilot("Keyser Soze"));
-        pilotsRepository.save(new Pilot("McManus"));
-        pilotsRepository.save(new Pilot("Dean Keaton"));
-        pilotsRepository.save(new Pilot("Fred Fenster"));
-        pilotsRepository.save(new Pilot("Todd Hockney"));
-        pilotsRepository.save(new Pilot("Verbal Kint"));
-        pilotsRepository.save(new Pilot("Dave Kujan"));
-        pilotsRepository.save(new Pilot("Edie Finneran"));
-        pilotsRepository.save(new Pilot("Mr. Kobayashi"));
+            pilotsRepository.save(new Pilot("Black Mamba"));
+            pilotsRepository.save(new Pilot("Bill"));
+            pilotsRepository.save(new Pilot("Hattori Hanzo"));
+            pilotsRepository.save(new Pilot("O-Ren Ishii"));
+            pilotsRepository.save(new Pilot("Gogo Yubari"));
 
-        Date now = new Date();
+            pilotsRepository.save(new Pilot("Keyser Soze"));
+            pilotsRepository.save(new Pilot("McManus"));
+            pilotsRepository.save(new Pilot("Dean Keaton"));
+            pilotsRepository.save(new Pilot("Fred Fenster"));
+            pilotsRepository.save(new Pilot("Todd Hockney"));
+            pilotsRepository.save(new Pilot("Verbal Kint"));
+            pilotsRepository.save(new Pilot("Dave Kujan"));
+            pilotsRepository.save(new Pilot("Edie Finneran"));
+            pilotsRepository.save(new Pilot("Mr. Kobayashi"));
 
-        Flight flight = new Flight();
-        flight.setLocation(locationRepository.findByName("LSZW"));
-        flight.setAircraft(aircraftRepository.findOne(1L));
-        flight.setPilot1(pilotsRepository.findOne(1L));
-        flight.setPilot2(pilotsRepository.findOne(2L));
-        flight.setStartTime(addDays(now, -1));
-        flight.setLandingTime(addMinutes(addDays(now, -1), 5));
-        flightsRepository.save(flight);
+            Date now = new Date();
 
-        flight = new Flight();
-        flight.setLocation(locationRepository.findByName("LSZW"));
-        flight.setAircraft(aircraftRepository.findOne(2L));
-        flight.setPilot1(pilotsRepository.findOne(3L));
-        flight.setPilot2(pilotsRepository.findOne(4L));
-        flight.setStartTime(now);
-        flight.setLandingTime(addMinutes(now, 5));
-        flightsRepository.save(flight);
+            Flight flight = new Flight();
+            flight.setLocation(locationRepository.findByName("LSZW"));
+            flight.setAircraft(aircraftRepository.findOne(1L));
+            flight.setPilot1(pilotsRepository.findOne(1L));
+            flight.setPilot2(pilotsRepository.findOne(2L));
+            flight.setStartTime(addDays(now, -1));
+            flight.setLandingTime(addMinutes(addDays(now, -1), 5));
+            flightsRepository.save(flight);
 
-        flight = new Flight();
-        flight.setLocation(locationRepository.findByName("LSZB"));
-        flight.setAircraft(aircraftRepository.findOne(3L));
-        flight.setPilot1(pilotsRepository.findOne(5L));
-        flight.setPilot2(pilotsRepository.findOne(6L));
-        flight.setStartTime(addMinutes(addDays(now, -1), 5));
-        flight.setLandingTime(now);
-        flightsRepository.save(flight);
+            flight = new Flight();
+            flight.setLocation(locationRepository.findByName("LSZW"));
+            flight.setAircraft(aircraftRepository.findOne(2L));
+            flight.setPilot1(pilotsRepository.findOne(3L));
+            flight.setPilot2(pilotsRepository.findOne(4L));
+            flight.setStartTime(now);
+            flight.setLandingTime(addMinutes(now, 5));
+            flightsRepository.save(flight);
 
-        flight = new Flight();
-        flight.setLocation(locationRepository.findByName("LSZB"));
-        flight.setAircraft(aircraftRepository.findOne(4L));
-        flight.setPilot1(pilotsRepository.findOne(7L));
-        flight.setPilot2(pilotsRepository.findOne(8L));
-        flight.setStartTime(now);
-        flight.setLandingTime(addMinutes(now, 5));
-        flightsRepository.save(flight);
+            flight = new Flight();
+            flight.setLocation(locationRepository.findByName("LSZB"));
+            flight.setAircraft(aircraftRepository.findOne(3L));
+            flight.setPilot1(pilotsRepository.findOne(5L));
+            flight.setPilot2(pilotsRepository.findOne(6L));
+            flight.setStartTime(addMinutes(addDays(now, -1), 5));
+            flight.setLandingTime(now);
+            flightsRepository.save(flight);
+
+            flight = new Flight();
+            flight.setLocation(locationRepository.findByName("LSZB"));
+            flight.setAircraft(aircraftRepository.findOne(4L));
+            flight.setPilot1(pilotsRepository.findOne(7L));
+            flight.setPilot2(pilotsRepository.findOne(8L));
+            flight.setStartTime(now);
+            flight.setLandingTime(addMinutes(now, 5));
+            flightsRepository.save(flight);
+
+            flight = new Flight();
+            flight.setLocation(locationRepository.findByName("LSTB"));
+            flight.setAircraft(aircraftRepository.findOne(5L));
+            flight.setPilot1(pilotsRepository.findOne(7L));
+            flight.setPilot2(pilotsRepository.findOne(8L));
+            flight.setStartTime(addMinutes(addDays(now, -1), 5));
+            flight.setLandingTime(now);
+            flightsRepository.save(flight);
+
+            flight = new Flight();
+            flight.setLocation(locationRepository.findByName("LSTB"));
+            flight.setAircraft(aircraftRepository.findOne(6L));
+            flight.setPilot1(pilotsRepository.findOne(9L));
+            flight.setStartTime(now);
+            flight.setLandingTime(addMinutes(now, 5));
+            flightsRepository.save(flight);
+        }
     }
 
     @Bean

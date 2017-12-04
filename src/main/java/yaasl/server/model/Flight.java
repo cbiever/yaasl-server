@@ -17,6 +17,7 @@ public class Flight {
     private Long id;
     private Location location;
     private Aircraft aircraft;
+    private Aircraft towplane;
     private Pilot pilot1;
     private Pilot pilot2;
     private Date startTime;
@@ -53,6 +54,16 @@ public class Flight {
 
     public void setAircraft(Aircraft aircraft) {
         this.aircraft = aircraft;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "towplane_id")
+    public Aircraft getTowplane() {
+        return towplane;
+    }
+
+    public void setTowplane(Aircraft towplane) {
+        this.towplane = towplane;
     }
 
     @ManyToOne

@@ -1,6 +1,5 @@
 package yaasl.server.convert;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import yaasl.server.jsonapi.Element;
 import yaasl.server.jsonapi.SingleData;
 import yaasl.server.model.Aircraft;
@@ -11,8 +10,6 @@ import yaasl.server.model.Pilot;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -51,6 +48,7 @@ public class Converter {
         element.setType("aircraft");
         if (includeAttributes) {
             element.addAttribute("call-sign", aircraft.getCallSign());
+            element.addAttribute("can-tow", aircraft.isCanTow());
             element.addAttribute("number-of-seats", aircraft.getNumberOfSeats());
         }
         return element;
@@ -80,6 +78,9 @@ public class Converter {
         if (flight.getAircraft() != null) {
             element.addRelationship("aircraft", new SingleData(convert(flight.getAircraft(), false)));
         }
+        if (flight.getTowplane() != null) {
+            element.addRelationship("towplane", new SingleData(convert(flight.getTowplane(), false)));
+        }
         if (flight.getPilot1() != null) {
             element.addRelationship("pilot1", new SingleData(convert(flight.getPilot1(), false)));
         }
@@ -102,6 +103,7 @@ public class Converter {
         }
         flight.setLocation(convertLocation(getRelationship("location", element)));
         flight.setAircraft(convertAircraft(getRelationship("aircraft", element)));
+        flight.setTowplane(convertAircraft(getRelationship("towplane", element)));
         flight.setPilot1(convertPilot(getRelationship("pilot1", element)));
         flight.setPilot2(convertPilot(getRelationship("pilot2", element)));
         Map<String, Object> attributes = element.getAttributes();
@@ -117,8 +119,7 @@ public class Converter {
     public static Date parseDate(String date) {
         try {
             return dateFormat.parse(date);
-        }
-        catch (ParseException e) {
+        } catch (ParseException e) {
             return null;
         }
     }
@@ -181,8 +182,7 @@ public class Converter {
     private static Date parseDateTime(String dateTime) {
         try {
             return dateTimeFormat.parse(dateTime);
-        }
-        catch (ParseException e) {
+        } catch (ParseException e) {
             return null;
         }
     }
