@@ -138,6 +138,10 @@ public class Converter {
         return calendar.getTime();
     }
 
+    public static String formatDate(Date date) {
+        return dateFormat.format(date);
+    }
+
     private static Location convertLocation(Map<String, Object> json) throws IOException {
         if (json != null) {
             Location location = new Location();

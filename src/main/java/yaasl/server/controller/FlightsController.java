@@ -4,9 +4,9 @@ import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import yaasl.server.Broadcaster;
 import yaasl.server.jsonapi.MultiData;
 import yaasl.server.jsonapi.SingleData;
@@ -21,9 +21,7 @@ import java.util.*;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static yaasl.server.convert.Converter.addDays;
-import static yaasl.server.convert.Converter.convert;
-import static yaasl.server.convert.Converter.parseDate;
+import static yaasl.server.convert.Converter.*;
 
 @RestController
 @RequestMapping("/rs/flights")
@@ -138,6 +136,22 @@ public class FlightsController {
         else {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @RequestMapping(value="/ktrax", method = GET, produces = "application/json")
+    public ResponseEntity<String> getKtraxSorties(@RequestParam("location") Optional<String> location, @RequestParam("date") Optional<String> date) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://ktrax.kisstech.ch/cgi-bin/ktrax.cgi?db=sortie&query_type=ap";
+        if (location.isPresent()) {
+            url += "&id=" + location.get().toUpperCase();
+        }
+        if (date.isPresent()) {
+            Date dateBegin = parseDate(date.get());
+            Date dateEnd = addDays(dateBegin, 1);
+            url += "&dbeg=" + formatDate(dateBegin) + "&dend=" + formatDate(dateEnd);
+        }
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        return ResponseEntity.ok(response.getBody());
     }
 
  }
