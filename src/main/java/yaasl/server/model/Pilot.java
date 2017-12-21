@@ -12,8 +12,6 @@ public class Pilot {
 
     private Long id;
     private String name;
-    private PilotRole role;
-//    private Set<Flight> flights;
 
     public Pilot() {
     }
@@ -38,14 +36,6 @@ public class Pilot {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public PilotRole getRole() {
-        return role;
-    }
-
-    public void setRole(PilotRole role) {
-        this.role = role;
     }
 
 //    @OneToMany(mappedBy = "flight", cascade = ALL)

@@ -7,9 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import yaasl.server.jsonapi.MultiData;
+import yaasl.server.model.Aircraft;
 import yaasl.server.persistence.AircraftRepository;
+
+import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static yaasl.server.convert.Converter.convert;
@@ -31,11 +35,19 @@ public class AircraftController {
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(method = GET, produces = "application/vnd.api+json")
-    public MultiData getAircraft() {
+    public MultiData getAircraft(@RequestParam("filter[callSign]") Optional<String> callSign) {
         MultiData data = new MultiData();
-        aircraftRepository
-                .findAll()
-                .forEach(aircraft -> data.getData().add(convert(aircraft)));
+        if (callSign.isPresent()) {
+            Aircraft aircraft = aircraftRepository.findAircraftByCallSign(callSign.get().toUpperCase());
+            if (aircraft != null) {
+                data.getData().add(convert(aircraft));
+            }
+        }
+        else {
+            aircraftRepository
+                    .findAll()
+                    .forEach(aircraft -> data.getData().add(convert(aircraft)));
+        }
         return data;
     }
 

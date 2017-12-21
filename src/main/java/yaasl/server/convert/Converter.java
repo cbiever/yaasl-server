@@ -1,28 +1,33 @@
 package yaasl.server.convert;
 
+import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import yaasl.server.jsonapi.Element;
 import yaasl.server.jsonapi.SingleData;
-import yaasl.server.model.Aircraft;
-import yaasl.server.model.Flight;
-import yaasl.server.model.Location;
-import yaasl.server.model.Pilot;
+import yaasl.server.model.*;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 import static java.lang.Long.parseLong;
-import static java.util.Calendar.DATE;
-import static java.util.Calendar.MINUTE;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+import static java.util.Calendar.*;
+import static org.apache.commons.lang3.time.DateUtils.truncate;
 
 public class Converter {
 
-    private static DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_DATE_TIME;
-
+    private static DateTimeFormatter isoDateTimeFormat = ISO_DATE_TIME;
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+    private static Logger LOG = LoggerFactory.getLogger(Converter.class);
 
     public static Element convert(Location location) {
         return convert(location, true);
@@ -68,12 +73,36 @@ public class Converter {
         return element;
     }
 
+    public static Element convert(PilotRole pilotRole) {
+        return convert(pilotRole, true);
+    }
+
+    public static Element convert(PilotRole pilotRole, boolean includeAttributes) {
+        Element element = new Element();
+        element.setId(pilotRole.getId().toString());
+        element.setType("pilot-role");
+        if (includeAttributes) {
+            element.addAttribute("description", pilotRole.getDescription());
+            element.addAttribute("i18n", pilotRole.getI18n());
+        }
+        return element;
+    }
+
     public static Element convert(Flight flight) {
         Element element = new Element();
         element.setId(flight.getId().toString());
         element.setType("flight");
-        if (flight.getLocation() != null) {
-            element.addRelationship("location", new SingleData(convert(flight.getLocation(), false)));
+        if (flight.getStartTime() != null) {
+            element.addAttribute("start-time", dateTimeFormat.format(flight.getStartTime()));
+        }
+        if (flight.getStartLocation() != null) {
+            element.addRelationship("start-location", new SingleData(convert(flight.getStartLocation(), false)));
+        }
+        if (flight.getLandingTime() != null) {
+            element.addAttribute("landing-time", dateTimeFormat.format(flight.getLandingTime()));
+        }
+        if (flight.getLandingLocation() != null) {
+            element.addRelationship("landing-location", new SingleData(convert(flight.getLandingLocation(), false)));
         }
         if (flight.getAircraft() != null) {
             element.addRelationship("aircraft", new SingleData(convert(flight.getAircraft(), false)));
@@ -84,35 +113,38 @@ public class Converter {
         if (flight.getPilot1() != null) {
             element.addRelationship("pilot1", new SingleData(convert(flight.getPilot1(), false)));
         }
+        if (flight.getPilot1Role() != null) {
+            element.addRelationship("pilot1-role", new SingleData(convert(flight.getPilot1Role(), false)));
+        }
         if (flight.getPilot2() != null) {
             element.addRelationship("pilot2", new SingleData(convert(flight.getPilot2(), false)));
         }
-        if (flight.getStartTime() != null) {
-            element.addAttribute("start-time", dateTimeFormat.format(flight.getStartTime()));
-        }
-        if (flight.getLandingTime() != null) {
-            element.addAttribute("landing-time", dateTimeFormat.format(flight.getLandingTime()));
+        if (flight.getPilot2Role() != null) {
+            element.addRelationship("pilot2-role", new SingleData(convert(flight.getPilot2Role(), false)));
         }
         return element;
     }
 
     public static Flight convert(Element element) throws Exception {
+        Map<String, Object> attributes = element.getAttributes();
         Flight flight = new Flight();
         if (element.getId() != null) {
             flight.setId(parseLong(element.getId()));
         }
-        flight.setLocation(convertLocation(getRelationship("location", element)));
-        flight.setAircraft(convertAircraft(getRelationship("aircraft", element)));
-        flight.setTowplane(convertAircraft(getRelationship("towplane", element)));
-        flight.setPilot1(convertPilot(getRelationship("pilot1", element)));
-        flight.setPilot2(convertPilot(getRelationship("pilot2", element)));
-        Map<String, Object> attributes = element.getAttributes();
+        flight.setStartLocation(convertLocation(getRelationship("start-location", element)));
         if (attributes.get("start-time") != null) {
             flight.setStartTime(parseDateTime((String) attributes.get("start-time")));
         }
+        flight.setLandingLocation(convertLocation(getRelationship("landing-location", element)));
         if (attributes.get("landing-time") != null) {
             flight.setLandingTime(parseDateTime(((String) attributes.get("landing-time"))));
         }
+        flight.setAircraft(convertAircraft(getRelationship("aircraft", element)));
+        flight.setTowplane(convertAircraft(getRelationship("towplane", element)));
+        flight.setPilot1(convertPilot(getRelationship("pilot1", element)));
+        flight.setPilot1Role(convertPilotRole(getRelationship("pilot1-role", element)));
+        flight.setPilot2(convertPilot(getRelationship("pilot2", element)));
+        flight.setPilot2Role(convertPilotRole(getRelationship("pilot2-role", element)));
         return flight;
     }
 
@@ -122,20 +154,6 @@ public class Converter {
         } catch (ParseException e) {
             return null;
         }
-    }
-
-    public static Date addMinutes(Date date, int numberOfMinutes) {
-        Calendar calendar = GregorianCalendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(MINUTE, numberOfMinutes);
-        return calendar.getTime();
-    }
-
-    public static Date addDays(Date date, int numberOfDays) {
-        Calendar calendar = GregorianCalendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(DATE, numberOfDays);
-        return calendar.getTime();
     }
 
     public static String formatDate(Date date) {
@@ -172,6 +190,16 @@ public class Converter {
         }
     }
 
+    private static PilotRole convertPilotRole(Map<String, Object> json) throws IOException {
+        if (json != null) {
+            PilotRole pilotRole = new PilotRole();
+            pilotRole.setId(parseLong((String) ((Map<String, Object>) json.get("data")).get("id")));
+            return pilotRole;
+        } else {
+            return null;
+        }
+    }
+
     private static Map<String, Object> getRelationship(String name, Element element) {
         if (element.getRelationships() != null) {
             for (Map.Entry<String, Object> relationship : element.getRelationships().entrySet()) {
@@ -187,6 +215,7 @@ public class Converter {
         try {
             return dateTimeFormat.parse(dateTime);
         } catch (ParseException e) {
+            LOG.error("Unable to convert {}", dateTime, e);
             return null;
         }
     }

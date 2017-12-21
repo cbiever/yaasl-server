@@ -13,9 +13,10 @@ import java.util.List;
 
 public interface FlightsRepository extends CrudRepository<Flight, Long> {
 
+    @Query("select flight from Flight flight where flight.startLocation = ?1 or flight.landingLocation = ?1")
     List<Flight> findByLocation(Location location);
 
-    @Query("select flight from Flight flight where flight.location = ?1 and (flight.startTime between ?2 and ?3 or flight.startTime is null)")
+    @Query("select flight from Flight flight where (flight.startLocation = ?1 or flight.landingLocation = ?1) and (flight.startTime between ?2 and ?3 or flight.startTime is null)")
     List<Flight> findFlights(Location location, Date beginningOfDate, Date endOfDay);
 
 }

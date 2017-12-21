@@ -15,13 +15,16 @@ import static javax.persistence.GenerationType.AUTO;
 public class Flight {
 
     private Long id;
-    private Location location;
+    private Date startTime;
+    private Location startLocation;
+    private Date landingTime;
+    private Location landingLocation;
     private Aircraft aircraft;
     private Aircraft towplane;
     private Pilot pilot1;
+    private PilotRole pilot1Role;
     private Pilot pilot2;
-    private Date startTime;
-    private Date landingTime;
+    private PilotRole pilot2Role;
 
     public Flight() {
     }
@@ -36,14 +39,40 @@ public class Flight {
         this.id = id;
     }
 
-    @ManyToOne
-    @JoinColumn(name="location_id")
-    public Location getLocation() {
-        return location;
+    public Date getStartTime() {
+        return startTime;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    @ManyToOne
+    @JoinColumn(name="start_location_id")
+    public Location getStartLocation() {
+        return startLocation;
+    }
+
+    public void setStartLocation(Location startLocation) {
+        this.startLocation = startLocation;
+    }
+
+    public Date getLandingTime() {
+        return landingTime;
+    }
+
+    public void setLandingTime(Date landingTime) {
+        this.landingTime = landingTime;
+    }
+
+    @ManyToOne
+    @JoinColumn(name="landing_location_id")
+    public Location getLandingLocation() {
+        return landingLocation;
+    }
+
+    public void setLandingLocation(Location landingLocation) {
+        this.landingLocation = landingLocation;
     }
 
     @ManyToOne
@@ -77,6 +106,16 @@ public class Flight {
     }
 
     @ManyToOne
+    @JoinColumn(name = "pilot1_role_id")
+    public PilotRole getPilot1Role() {
+        return pilot1Role;
+    }
+
+    public void setPilot1Role(PilotRole pilot1Role) {
+        this.pilot1Role = pilot1Role;
+    }
+
+    @ManyToOne
     @JoinColumn(name = "pilot2_id")
     public Pilot getPilot2() {
         return pilot2;
@@ -86,20 +125,13 @@ public class Flight {
         this.pilot2 = pilot2;
     }
 
-    public Date getStartTime() {
-        return startTime;
+    @ManyToOne
+    @JoinColumn(name = "pilot2_role_id")
+    public PilotRole getPilot2Role() {
+        return pilot2Role;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setPilot2Role(PilotRole pilot2Role) {
+        this.pilot2Role = pilot2Role;
     }
-
-    public Date getLandingTime() {
-        return landingTime;
-    }
-
-    public void setLandingTime(Date landingTime) {
-        this.landingTime = landingTime;
-    }
-
 }

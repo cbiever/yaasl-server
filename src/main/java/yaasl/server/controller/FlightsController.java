@@ -1,9 +1,12 @@
 package yaasl.server.controller;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -16,8 +19,17 @@ import yaasl.server.model.Update;
 import yaasl.server.persistence.FlightsRepository;
 import yaasl.server.persistence.LocationRepository;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.HOUR;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.time.DateUtils.addDays;
+import static org.apache.commons.lang3.time.DateUtils.truncate;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -38,6 +50,9 @@ public class FlightsController {
     @Autowired
     private Broadcaster broadcaster;
 
+    @Value("${provider.ktrax.url}")
+    private String ktrax;
+
     @ApiOperation(value = "getFlights", nickname = "getFlights")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = MultiData.class),
@@ -47,21 +62,37 @@ public class FlightsController {
             @ApiResponse(code = 422, message = "Unprocessable Entity"),
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(method = GET, produces = "application/vnd.api+json")
-    public ResponseEntity<MultiData> getFlights(@RequestParam("filter[location]") Optional<String> locationFilter, @RequestParam("filter[date]") Optional<String> dateFilter) {
+    public ResponseEntity<MultiData> getFlights(@RequestParam("filter[location]") Optional<String> location,
+                                                @RequestParam("filter[date]") Optional<String> date) {
         MultiData data = new MultiData();
-        if (locationFilter.isPresent() && dateFilter.isPresent()) {
-            Location location = locationRepository.findByName(locationFilter.get().toUpperCase());
-            Date date = parseDate(dateFilter.get());
-            if (date == null) {
+        if (location.isPresent() && date.isPresent()) {
+            Location filterLocation = locationRepository.findByName(location.get().toUpperCase());
+            Date filterDate = parseDate(date.get());
+            if (filterLocation == null || filterDate == null) {
                 return ResponseEntity.status(UNPROCESSABLE_ENTITY).build();
             }
-            List<Flight> flights = flightsRepository.findFlights(location, date, addDays(date, 1));
+            List<Flight> flights = flightsRepository.findFlights(filterLocation, filterDate, addDays(filterDate, 1));
+            Date today = truncate(new Date(), DAY_OF_MONTH);
+            flights = flights
+                        .stream()
+                        .filter(flight -> {
+                            if (flight.getStartTime() == null) {
+                                return today.equals(filterDate);
+                            }
+                            else {
+                                return true;
+                            }
+                        })
+                        .collect(toList());
             flights.forEach(flight -> data.getData().add(convert(flight)));
         }
-        else if (locationFilter.isPresent()) {
-            Location location = locationRepository.findByName(locationFilter.get().toUpperCase());
+        else if (location.isPresent()) {
+            Location filterLocation = locationRepository.findByName(location.get().toUpperCase());
+            if (filterLocation == null) {
+                return ResponseEntity.status(UNPROCESSABLE_ENTITY).build();
+            }
             flightsRepository
-                    .findByLocation(location)
+                    .findByLocation(filterLocation)
                     .forEach(flight -> data.getData().add(convert(flight)));
         }
         else {
@@ -128,9 +159,9 @@ public class FlightsController {
         Flight flight = flightsRepository.findOne(id);
         if (flight != null) {
             flightsRepository.delete(id);
-            LOG.debug("flight: {}", flight);
             Update update = new Update("delete", convert(flight));
             broadcaster.sendUpdate(update, originatorId);
+            LOG.debug("flight: {} deleted by originator {}", id, originatorId);
             return ResponseEntity.ok(new SingleData(convert(flight)));
         }
         else {
@@ -138,10 +169,16 @@ public class FlightsController {
         }
     }
 
+    @ApiOperation(value = "ktrax", nickname = "ktrax")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(value="/ktrax", method = GET, produces = "application/json")
-    public ResponseEntity<String> getKtraxSorties(@RequestParam("location") Optional<String> location, @RequestParam("date") Optional<String> date) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://ktrax.kisstech.ch/cgi-bin/ktrax.cgi?db=sortie&query_type=ap";
+    public ResponseEntity<String> getKtraxLogbook(@RequestParam("location") Optional<String> location, @RequestParam("date") Optional<String> date) {
+        String url = ktrax + "?db=sortie&query_type=ap";
         if (location.isPresent()) {
             url += "&id=" + location.get().toUpperCase();
         }
@@ -150,6 +187,7 @@ public class FlightsController {
             Date dateEnd = addDays(dateBegin, 1);
             url += "&dbeg=" + formatDate(dateBegin) + "&dend=" + formatDate(dateEnd);
         }
+        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         return ResponseEntity.ok(response.getBody());
     }

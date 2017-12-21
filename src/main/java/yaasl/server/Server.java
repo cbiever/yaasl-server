@@ -1,10 +1,9 @@
 package yaasl.server;
 
+import static org.apache.commons.lang3.time.DateUtils.addDays;
+import static org.apache.commons.lang3.time.DateUtils.addMinutes;
 import static springfox.documentation.builders.PathSelectors.regex;
 import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
-import static yaasl.server.convert.Converter.addDays;
-import static yaasl.server.convert.Converter.addMinutes;
-import static yaasl.server.model.PilotRole.PILOT;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -19,15 +18,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import yaasl.server.controller.AircraftController;
 import yaasl.server.jsonapi.MultiData;
 import yaasl.server.model.*;
-import yaasl.server.persistence.AircraftRepository;
-import yaasl.server.persistence.FlightsRepository;
-import yaasl.server.persistence.LocationRepository;
-import yaasl.server.persistence.PilotsRepository;
+import yaasl.server.persistence.*;
 
 import javax.annotation.PostConstruct;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.Date;
 
 @SpringBootApplication
@@ -42,6 +35,9 @@ public class Server {
 
     @Autowired
     private LocationRepository locationRepository;
+
+    @Autowired
+    private PilotRoleRepository pilotRoleRepository;
 
     @Autowired
     private PilotsRepository pilotsRepository;
@@ -73,6 +69,11 @@ public class Server {
             aircraftRepository.save(new Aircraft("HB-HHO", true, 4));
             aircraftRepository.save(new Aircraft("HB-2377", true, 2));
 
+            pilotRoleRepository.save(new PilotRole("Flight instructor", "pilot.role.fi"));
+            pilotRoleRepository.save(new PilotRole("Pilot", "pilot.role.pilot"));
+            pilotRoleRepository.save(new PilotRole("Student", "pilot.role.student"));
+            pilotRoleRepository.save(new PilotRole("Passenger", "pilot.role.passenger"));
+
             pilotsRepository.save(new Pilot("Han Solo"));
             pilotsRepository.save(new Pilot("Chewbacca"));
             pilotsRepository.save(new Pilot("Luke Skywalker"));
@@ -97,7 +98,8 @@ public class Server {
             Date now = new Date();
 
             Flight flight = new Flight();
-            flight.setLocation(locationRepository.findByName("LSZW"));
+            flight.setStartLocation(locationRepository.findByName("LSZW"));
+            flight.setLandingLocation(locationRepository.findByName("LSZW"));
             flight.setAircraft(aircraftRepository.findOne(1L));
             flight.setPilot1(pilotsRepository.findOne(1L));
             flight.setPilot2(pilotsRepository.findOne(2L));
@@ -106,7 +108,8 @@ public class Server {
             flightsRepository.save(flight);
 
             flight = new Flight();
-            flight.setLocation(locationRepository.findByName("LSZW"));
+            flight.setStartLocation(locationRepository.findByName("LSZW"));
+            flight.setLandingLocation(locationRepository.findByName("LSZW"));
             flight.setAircraft(aircraftRepository.findOne(2L));
             flight.setPilot1(pilotsRepository.findOne(3L));
             flight.setPilot2(pilotsRepository.findOne(4L));
@@ -115,7 +118,8 @@ public class Server {
             flightsRepository.save(flight);
 
             flight = new Flight();
-            flight.setLocation(locationRepository.findByName("LSZB"));
+            flight.setStartLocation(locationRepository.findByName("LSZB"));
+            flight.setLandingLocation(locationRepository.findByName("LSZB"));
             flight.setAircraft(aircraftRepository.findOne(3L));
             flight.setPilot1(pilotsRepository.findOne(5L));
             flight.setPilot2(pilotsRepository.findOne(6L));
@@ -124,7 +128,8 @@ public class Server {
             flightsRepository.save(flight);
 
             flight = new Flight();
-            flight.setLocation(locationRepository.findByName("LSZB"));
+            flight.setStartLocation(locationRepository.findByName("LSZB"));
+            flight.setLandingLocation(locationRepository.findByName("LSZB"));
             flight.setAircraft(aircraftRepository.findOne(4L));
             flight.setPilot1(pilotsRepository.findOne(7L));
             flight.setPilot2(pilotsRepository.findOne(8L));
@@ -133,7 +138,8 @@ public class Server {
             flightsRepository.save(flight);
 
             flight = new Flight();
-            flight.setLocation(locationRepository.findByName("LSTB"));
+            flight.setStartLocation(locationRepository.findByName("LSTB"));
+            flight.setLandingLocation(locationRepository.findByName("LSTB"));
             flight.setAircraft(aircraftRepository.findOne(5L));
             flight.setPilot1(pilotsRepository.findOne(7L));
             flight.setPilot2(pilotsRepository.findOne(8L));
@@ -142,7 +148,8 @@ public class Server {
             flightsRepository.save(flight);
 
             flight = new Flight();
-            flight.setLocation(locationRepository.findByName("LSTB"));
+            flight.setStartLocation(locationRepository.findByName("LSTB"));
+            flight.setLandingLocation(locationRepository.findByName("LSTB"));
             flight.setAircraft(aircraftRepository.findOne(6L));
             flight.setPilot1(pilotsRepository.findOne(9L));
             flight.setStartTime(now);
@@ -167,7 +174,7 @@ public class Server {
                 .groupName("Aircraft")
                 .apiInfo(apiInfo())
                 .select()
-                .paths(regex("/rs/aircrafts"))
+                .paths(regex("/rs/aircrafts/*.*"))
                 .build();
     }
 
@@ -177,7 +184,7 @@ public class Server {
                 .groupName("Pilots")
                 .apiInfo(apiInfo())
                 .select()
-                .paths(regex("/rs/pilots"))
+                .paths(regex("/rs/pilots/*.*"))
                 .build();
     }
 

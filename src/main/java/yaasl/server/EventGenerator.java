@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
-import static yaasl.server.convert.Converter.addMinutes;
+import static org.apache.commons.lang3.time.DateUtils.addMinutes;
 import static yaasl.server.convert.Converter.convert;
 
 @Component
@@ -31,7 +31,7 @@ public class EventGenerator {
     @Autowired
     private FlightsRepository flightsRepository;
 
-    @Scheduled(fixedRate = 30000)
+//    @Scheduled(fixedRate = 30000)
     public void generateEvent() {
         List<Flight> flights = getAllFlights();
         Date now = new Date();
