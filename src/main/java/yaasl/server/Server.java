@@ -74,26 +74,26 @@ public class Server {
             pilotRoleRepository.save(new PilotRole("Student", "pilot.role.student"));
             pilotRoleRepository.save(new PilotRole("Passenger", "pilot.role.passenger"));
 
-            pilotsRepository.save(new Pilot("Han Solo"));
-            pilotsRepository.save(new Pilot("Chewbacca"));
-            pilotsRepository.save(new Pilot("Luke Skywalker"));
-            pilotsRepository.save(new Pilot("Jabba the Hutt"));
+            pilotsRepository.save(new Pilot("Han Solo", pilotRoleRepository.findByDescription("Flight instructor")));
+            pilotsRepository.save(new Pilot("Chewbacca", pilotRoleRepository.findByDescription("Student")));
+            pilotsRepository.save(new Pilot("Luke Skywalker", pilotRoleRepository.findByDescription("Pilot")));
+            pilotsRepository.save(new Pilot("Jabba the Hutt", pilotRoleRepository.findByDescription("Student")));
 
-            pilotsRepository.save(new Pilot("Black Mamba"));
-            pilotsRepository.save(new Pilot("Bill"));
-            pilotsRepository.save(new Pilot("Hattori Hanzo"));
-            pilotsRepository.save(new Pilot("O-Ren Ishii"));
-            pilotsRepository.save(new Pilot("Gogo Yubari"));
+            pilotsRepository.save(new Pilot("Black Mamba", pilotRoleRepository.findByDescription("Flight instructor")));
+            pilotsRepository.save(new Pilot("Bill", pilotRoleRepository.findByDescription("Flight instructor")));
+            pilotsRepository.save(new Pilot("Hattori Hanzo", pilotRoleRepository.findByDescription("Flight instructor")));
+            pilotsRepository.save(new Pilot("O-Ren Ishii", pilotRoleRepository.findByDescription("Student")));
+            pilotsRepository.save(new Pilot("Gogo Yubari", pilotRoleRepository.findByDescription("Passenger")));
 
-            pilotsRepository.save(new Pilot("Keyser Soze"));
-            pilotsRepository.save(new Pilot("McManus"));
-            pilotsRepository.save(new Pilot("Dean Keaton"));
-            pilotsRepository.save(new Pilot("Fred Fenster"));
-            pilotsRepository.save(new Pilot("Todd Hockney"));
-            pilotsRepository.save(new Pilot("Verbal Kint"));
-            pilotsRepository.save(new Pilot("Dave Kujan"));
-            pilotsRepository.save(new Pilot("Edie Finneran"));
-            pilotsRepository.save(new Pilot("Mr. Kobayashi"));
+            pilotsRepository.save(new Pilot("Keyser Soze", pilotRoleRepository.findByDescription("Flight instructor")));
+            pilotsRepository.save(new Pilot("McManus", pilotRoleRepository.findByDescription("Student")));
+            pilotsRepository.save(new Pilot("Dean Keaton", pilotRoleRepository.findByDescription("Student")));
+            pilotsRepository.save(new Pilot("Fred Fenster", pilotRoleRepository.findByDescription("Pilot")));
+            pilotsRepository.save(new Pilot("Todd Hockney", pilotRoleRepository.findByDescription("Pilot")));
+            pilotsRepository.save(new Pilot("Verbal Kint", pilotRoleRepository.findByDescription("Flight instructor")));
+            pilotsRepository.save(new Pilot("Dave Kujan", pilotRoleRepository.findByDescription("Passenger")));
+            pilotsRepository.save(new Pilot("Edie Finneran", pilotRoleRepository.findByDescription("Student")));
+            pilotsRepository.save(new Pilot("Mr. Kobayashi", pilotRoleRepository.findByDescription("Passenger")));
 
             Date now = new Date();
 

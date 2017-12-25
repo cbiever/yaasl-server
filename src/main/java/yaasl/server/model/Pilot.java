@@ -12,12 +12,14 @@ public class Pilot {
 
     private Long id;
     private String name;
+    private PilotRole standardRole;
 
     public Pilot() {
     }
 
-    public Pilot(String name) {
+    public Pilot(String name, PilotRole standardRole) {
         this.name = name;
+        this.standardRole = standardRole;
     }
 
     @Id
@@ -38,7 +40,17 @@ public class Pilot {
         this.name = name;
     }
 
-//    @OneToMany(mappedBy = "flight", cascade = ALL)
+    @ManyToOne
+    @JoinColumn(name = "pilot_role_id")
+    public PilotRole getStandardRole() {
+        return standardRole;
+    }
+
+    public void setStandardRole(PilotRole standardRole) {
+        this.standardRole = standardRole;
+    }
+
+    //    @OneToMany(mappedBy = "flight", cascade = ALL)
 //    public Set<Flight> getFlights() {
 //        return flights;
 //    }

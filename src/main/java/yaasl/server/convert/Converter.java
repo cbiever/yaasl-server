@@ -70,6 +70,9 @@ public class Converter {
         if (includeAttributes) {
             element.addAttribute("name", pilot.getName());
         }
+        if (pilot.getStandardRole() != null) {
+            element.addRelationship("standard-role", new SingleData(convert(pilot.getStandardRole(), false)));
+        }
         return element;
     }
 

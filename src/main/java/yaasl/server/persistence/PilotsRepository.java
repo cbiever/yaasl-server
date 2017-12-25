@@ -2,6 +2,7 @@ package yaasl.server.persistence;
 
 import org.springframework.data.repository.CrudRepository;
 import yaasl.server.model.Pilot;
+import yaasl.server.model.PilotRole;
 
 import java.util.List;
 
