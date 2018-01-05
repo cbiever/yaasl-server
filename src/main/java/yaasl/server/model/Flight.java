@@ -1,13 +1,7 @@
 package yaasl.server.model;
 
-import org.apache.tomcat.jni.Local;
-
 import javax.persistence.*;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.Date;
-import java.util.UUID;
 
 import static javax.persistence.GenerationType.AUTO;
 
@@ -20,11 +14,15 @@ public class Flight {
     private Date landingTime;
     private Location landingLocation;
     private Aircraft aircraft;
-    private Aircraft towplane;
     private Pilot pilot1;
     private PilotRole pilot1Role;
     private Pilot pilot2;
     private PilotRole pilot2Role;
+    private Pilot towPilot;
+    private Aircraft towPlane;
+    private Date towPlaneLandingTime;
+    private CostSharing costSharing;
+    private String comment;
 
     public Flight() {
     }
@@ -86,16 +84,6 @@ public class Flight {
     }
 
     @ManyToOne
-    @JoinColumn(name = "towplane_id")
-    public Aircraft getTowplane() {
-        return towplane;
-    }
-
-    public void setTowplane(Aircraft towplane) {
-        this.towplane = towplane;
-    }
-
-    @ManyToOne
     @JoinColumn(name = "pilot1_id")
     public Pilot getPilot1() {
         return pilot1;
@@ -134,4 +122,51 @@ public class Flight {
     public void setPilot2Role(PilotRole pilot2Role) {
         this.pilot2Role = pilot2Role;
     }
+
+    @ManyToOne
+    @JoinColumn(name = "tow_plane_id")
+    public Aircraft getTowPlane() {
+        return towPlane;
+    }
+
+    public void setTowPlane(Aircraft towPlane) {
+        this.towPlane = towPlane;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "tow_pilot_id")
+    public Pilot getTowPilot() {
+        return towPilot;
+    }
+
+    public void setTowPilot(Pilot towPilot) {
+        this.towPilot = towPilot;
+    }
+
+    public Date getTowPlaneLandingTime() {
+        return towPlaneLandingTime;
+    }
+
+    public void setTowPlaneLandingTime(Date towPlaneLandingTime) {
+        this.towPlaneLandingTime = towPlaneLandingTime;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "cost_sharing_id")
+    public CostSharing getCostSharing() {
+        return costSharing;
+    }
+
+    public void setCostSharing(CostSharing costSharing) {
+        this.costSharing = costSharing;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
 }

@@ -8,8 +8,8 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
-        <spring-boot.version>1.5.8.RELEASE</spring-boot.version>
-        <spring-web.version>5.0.1.RELEASE</spring-web.version>
+        <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
+        <spring-web.version>5.0.2.RELEASE</spring-web.version>
         <springfox.version>2.7.0</springfox.version>
         <jackson.version>2.9.2</jackson.version>
         <postgresql.version>42.1.4</postgresql.version>

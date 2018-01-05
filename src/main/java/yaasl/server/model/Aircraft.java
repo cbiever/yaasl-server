@@ -11,13 +11,15 @@ public class Aircraft {
     private Long id;
     private String callSign;
     private boolean canTow;
+    private boolean needsTowing;
     private int numberOfSeats;
 
     public Aircraft() {
     }
 
-    public Aircraft(String callSign, boolean canTow, int numberOfSeats) {
+    public Aircraft(String callSign, boolean needsTowing, boolean canTow, int numberOfSeats) {
         this.callSign = callSign;
+        this.needsTowing = needsTowing;
         this.canTow = canTow;
         this.numberOfSeats = numberOfSeats;
     }
@@ -36,6 +38,10 @@ public class Aircraft {
         return callSign;
     }
 
+    public void setCallSign(String callSign) {
+        this.callSign = callSign;
+    }
+
     public boolean isCanTow() {
         return canTow;
     }
@@ -44,8 +50,12 @@ public class Aircraft {
         this.canTow = canTow;
     }
 
-    public void setCallSign(String callSign) {
-        this.callSign = callSign;
+    public boolean isNeedsTowing() {
+        return needsTowing;
+    }
+
+    public void setNeedsTowing(boolean needsTowing) {
+        this.needsTowing = needsTowing;
     }
 
     public int getNumberOfSeats() {

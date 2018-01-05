@@ -13,13 +13,15 @@ public class Pilot {
     private Long id;
     private String name;
     private PilotRole standardRole;
+    private boolean canTow;
 
     public Pilot() {
     }
 
-    public Pilot(String name, PilotRole standardRole) {
+    public Pilot(String name, PilotRole standardRole, boolean canTow) {
         this.name = name;
         this.standardRole = standardRole;
+        this.canTow = canTow;
     }
 
     @Id
@@ -48,6 +50,14 @@ public class Pilot {
 
     public void setStandardRole(PilotRole standardRole) {
         this.standardRole = standardRole;
+    }
+
+    public boolean isCanTow() {
+        return canTow;
+    }
+
+    public void setCanTow(boolean canTow) {
+        this.canTow = canTow;
     }
 
     //    @OneToMany(mappedBy = "flight", cascade = ALL)

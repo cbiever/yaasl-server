@@ -48,52 +48,56 @@ public class Server {
     @Autowired
     private FlightsRepository flightsRepository;
 
+    @Autowired
+    private CostSharingRepository costSharingRepository;
+
     @PostConstruct
     public void init() {
         if (locationRepository.count() == 0) {
+
             locationRepository.save(new Location("LSZB"));
             locationRepository.save(new Location("LSZW"));
             locationRepository.save(new Location("LSTB"));
 
-            aircraftRepository.save(new Aircraft("HB-1766", false, 2));
-            aircraftRepository.save(new Aircraft("HB-1811", false, 2));
-            aircraftRepository.save(new Aircraft("HB-3131", false, 2));
-            aircraftRepository.save(new Aircraft("HB-3362", false, 2));
-            aircraftRepository.save(new Aircraft("HB-3411", false, 2));
-            aircraftRepository.save(new Aircraft("HB-3022", false, 1));
-            aircraftRepository.save(new Aircraft("HB-3043", false, 1));
-            aircraftRepository.save(new Aircraft("HB-3299", false, 1));
-            aircraftRepository.save(new Aircraft("HB-3447", false, 1));
-            aircraftRepository.save(new Aircraft("HB-3453", false, 1));
+            aircraftRepository.save(new Aircraft("HB-1766", true, false, 2));
+            aircraftRepository.save(new Aircraft("HB-1811", true, false, 2));
+            aircraftRepository.save(new Aircraft("HB-3131", true, false, 2));
+            aircraftRepository.save(new Aircraft("HB-3362", true, false, 2));
+            aircraftRepository.save(new Aircraft("HB-3411", true, false, 2));
+            aircraftRepository.save(new Aircraft("HB-3022", true, false, 1));
+            aircraftRepository.save(new Aircraft("HB-3043", true, false, 1));
+            aircraftRepository.save(new Aircraft("HB-3299", true, false, 1));
+            aircraftRepository.save(new Aircraft("HB-3447", true, false, 1));
+            aircraftRepository.save(new Aircraft("HB-3453", true, false, 1));
 
-            aircraftRepository.save(new Aircraft("HB-HHO", true, 4));
-            aircraftRepository.save(new Aircraft("HB-2377", true, 2));
+            aircraftRepository.save(new Aircraft("HB-HHO",  false, true, 4));
+            aircraftRepository.save(new Aircraft("HB-2377", false, true, 2));
 
             pilotRoleRepository.save(new PilotRole("Flight instructor", "pilot.role.fi"));
             pilotRoleRepository.save(new PilotRole("Pilot", "pilot.role.pilot"));
             pilotRoleRepository.save(new PilotRole("Student", "pilot.role.student"));
             pilotRoleRepository.save(new PilotRole("Passenger", "pilot.role.passenger"));
 
-            pilotsRepository.save(new Pilot("Han Solo", pilotRoleRepository.findByDescription("Flight instructor")));
-            pilotsRepository.save(new Pilot("Chewbacca", pilotRoleRepository.findByDescription("Student")));
-            pilotsRepository.save(new Pilot("Luke Skywalker", pilotRoleRepository.findByDescription("Pilot")));
-            pilotsRepository.save(new Pilot("Jabba the Hutt", pilotRoleRepository.findByDescription("Student")));
+            pilotsRepository.save(new Pilot("Han Solo", pilotRoleRepository.findByDescription("Flight instructor"), false));
+            pilotsRepository.save(new Pilot("Chewbacca", pilotRoleRepository.findByDescription("Student"), false));
+            pilotsRepository.save(new Pilot("Luke Skywalker", pilotRoleRepository.findByDescription("Pilot"), false));
+            pilotsRepository.save(new Pilot("Jabba the Hutt", pilotRoleRepository.findByDescription("Student"), true));
 
-            pilotsRepository.save(new Pilot("Black Mamba", pilotRoleRepository.findByDescription("Flight instructor")));
-            pilotsRepository.save(new Pilot("Bill", pilotRoleRepository.findByDescription("Flight instructor")));
-            pilotsRepository.save(new Pilot("Hattori Hanzo", pilotRoleRepository.findByDescription("Flight instructor")));
-            pilotsRepository.save(new Pilot("O-Ren Ishii", pilotRoleRepository.findByDescription("Student")));
-            pilotsRepository.save(new Pilot("Gogo Yubari", pilotRoleRepository.findByDescription("Passenger")));
+            pilotsRepository.save(new Pilot("Black Mamba", pilotRoleRepository.findByDescription("Flight instructor"), false));
+            pilotsRepository.save(new Pilot("Bill", pilotRoleRepository.findByDescription("Flight instructor"), false));
+            pilotsRepository.save(new Pilot("Hattori Hanzo", pilotRoleRepository.findByDescription("Flight instructor"), true));
+            pilotsRepository.save(new Pilot("O-Ren Ishii", pilotRoleRepository.findByDescription("Student"), false));
+            pilotsRepository.save(new Pilot("Gogo Yubari", pilotRoleRepository.findByDescription("Passenger"), false));
 
-            pilotsRepository.save(new Pilot("Keyser Soze", pilotRoleRepository.findByDescription("Flight instructor")));
-            pilotsRepository.save(new Pilot("McManus", pilotRoleRepository.findByDescription("Student")));
-            pilotsRepository.save(new Pilot("Dean Keaton", pilotRoleRepository.findByDescription("Student")));
-            pilotsRepository.save(new Pilot("Fred Fenster", pilotRoleRepository.findByDescription("Pilot")));
-            pilotsRepository.save(new Pilot("Todd Hockney", pilotRoleRepository.findByDescription("Pilot")));
-            pilotsRepository.save(new Pilot("Verbal Kint", pilotRoleRepository.findByDescription("Flight instructor")));
-            pilotsRepository.save(new Pilot("Dave Kujan", pilotRoleRepository.findByDescription("Passenger")));
-            pilotsRepository.save(new Pilot("Edie Finneran", pilotRoleRepository.findByDescription("Student")));
-            pilotsRepository.save(new Pilot("Mr. Kobayashi", pilotRoleRepository.findByDescription("Passenger")));
+            pilotsRepository.save(new Pilot("Keyser Soze", pilotRoleRepository.findByDescription("Flight instructor"), true));
+            pilotsRepository.save(new Pilot("McManus", pilotRoleRepository.findByDescription("Student"), false));
+            pilotsRepository.save(new Pilot("Dean Keaton", pilotRoleRepository.findByDescription("Student"), false));
+            pilotsRepository.save(new Pilot("Fred Fenster", pilotRoleRepository.findByDescription("Pilot"), false));
+            pilotsRepository.save(new Pilot("Todd Hockney", pilotRoleRepository.findByDescription("Pilot"), false));
+            pilotsRepository.save(new Pilot("Verbal Kint", pilotRoleRepository.findByDescription("Flight instructor"), false));
+            pilotsRepository.save(new Pilot("Dave Kujan", pilotRoleRepository.findByDescription("Passenger"), false));
+            pilotsRepository.save(new Pilot("Edie Finneran", pilotRoleRepository.findByDescription("Student"), false));
+            pilotsRepository.save(new Pilot("Mr. Kobayashi", pilotRoleRepository.findByDescription("Passenger"), true));
 
             Date now = new Date();
 
@@ -155,6 +159,9 @@ public class Server {
             flight.setStartTime(now);
             flight.setLandingTime(addMinutes(now, 5));
             flightsRepository.save(flight);
+
+            costSharingRepository.save(new CostSharing("Student", "cost.sharing.student"));
+            costSharingRepository.save(new CostSharing("FiftyFifty", "cost.sharing.fifty.fifty"));
         }
     }
 

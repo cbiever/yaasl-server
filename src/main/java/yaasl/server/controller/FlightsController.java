@@ -16,6 +16,7 @@ import yaasl.server.jsonapi.SingleData;
 import yaasl.server.model.Flight;
 import yaasl.server.model.Location;
 import yaasl.server.model.Update;
+import yaasl.server.persistence.CostSharingRepository;
 import yaasl.server.persistence.FlightsRepository;
 import yaasl.server.persistence.LocationRepository;
 
@@ -46,6 +47,9 @@ public class FlightsController {
 
     @Autowired
     private LocationRepository locationRepository;
+
+    @Autowired
+    private CostSharingRepository costSharingRepository;
 
     @Autowired
     private Broadcaster broadcaster;
@@ -167,6 +171,22 @@ public class FlightsController {
         else {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @ApiOperation(value = "getCostSharings", nickname = "getCostSharings")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = MultiData.class),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Failure")})
+    @RequestMapping(path = "/costSharings", method = GET, produces = "application/vnd.api+json")
+    public MultiData getCostSharings() {
+        MultiData data = new MultiData();
+        costSharingRepository
+                .findAll()
+                .forEach(costSharing -> data.getData().add(convert(costSharing)));
+        return data;
     }
 
     @ApiOperation(value = "ktrax", nickname = "ktrax")

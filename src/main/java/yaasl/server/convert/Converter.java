@@ -1,6 +1,5 @@
 package yaasl.server.convert;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import yaasl.server.jsonapi.Element;
@@ -11,14 +10,11 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 import static java.lang.Long.parseLong;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
-import static java.util.Calendar.*;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.time.DateUtils.truncate;
 
 public class Converter {
@@ -54,6 +50,7 @@ public class Converter {
         if (includeAttributes) {
             element.addAttribute("call-sign", aircraft.getCallSign());
             element.addAttribute("can-tow", aircraft.isCanTow());
+            element.addAttribute("needs-towing", aircraft.isNeedsTowing());
             element.addAttribute("number-of-seats", aircraft.getNumberOfSeats());
         }
         return element;
@@ -69,6 +66,7 @@ public class Converter {
         element.setType("pilot");
         if (includeAttributes) {
             element.addAttribute("name", pilot.getName());
+            element.addAttribute("can-tow", pilot.isCanTow());
         }
         if (pilot.getStandardRole() != null) {
             element.addRelationship("standard-role", new SingleData(convert(pilot.getStandardRole(), false)));
@@ -87,6 +85,21 @@ public class Converter {
         if (includeAttributes) {
             element.addAttribute("description", pilotRole.getDescription());
             element.addAttribute("i18n", pilotRole.getI18n());
+        }
+        return element;
+    }
+
+    public static Element convert(CostSharing costSharing) {
+        return convert(costSharing, true);
+    }
+
+    public static Element convert(CostSharing costSharing, boolean includeAttributes) {
+        Element element = new Element();
+        element.setId(costSharing.getId().toString());
+        element.setType("cost-sharing");
+        if (includeAttributes) {
+            element.addAttribute("description", costSharing.getDescription());
+            element.addAttribute("i18n", costSharing.getI18n());
         }
         return element;
     }
@@ -110,9 +123,6 @@ public class Converter {
         if (flight.getAircraft() != null) {
             element.addRelationship("aircraft", new SingleData(convert(flight.getAircraft(), false)));
         }
-        if (flight.getTowplane() != null) {
-            element.addRelationship("towplane", new SingleData(convert(flight.getTowplane(), false)));
-        }
         if (flight.getPilot1() != null) {
             element.addRelationship("pilot1", new SingleData(convert(flight.getPilot1(), false)));
         }
@@ -125,6 +135,21 @@ public class Converter {
         if (flight.getPilot2Role() != null) {
             element.addRelationship("pilot2-role", new SingleData(convert(flight.getPilot2Role(), false)));
         }
+        if (flight.getTowPlane() != null) {
+            element.addRelationship("tow-plane", new SingleData(convert(flight.getTowPlane(), false)));
+        }
+        if (flight.getTowPilot() != null) {
+            element.addRelationship("tow-pilot", new SingleData(convert(flight.getTowPilot(), false)));
+        }
+        if (flight.getTowPlaneLandingTime() != null) {
+            element.addAttribute("tow-plane-landing-time", dateTimeFormat.format(flight.getTowPlaneLandingTime()));
+        }
+        if (flight.getCostSharing() != null) {
+            element.addRelationship("cost-sharing", new SingleData(convert(flight.getCostSharing(), false)));
+        }
+        if (isNotEmpty(flight.getComment())) {
+            element.addAttribute("comment", flight.getComment());
+        }
         return element;
     }
 
@@ -135,19 +160,19 @@ public class Converter {
             flight.setId(parseLong(element.getId()));
         }
         flight.setStartLocation(convertLocation(getRelationship("start-location", element)));
-        if (attributes.get("start-time") != null) {
-            flight.setStartTime(parseDateTime((String) attributes.get("start-time")));
-        }
+        flight.setStartTime(parseDateTime((String) attributes.get("start-time")));
         flight.setLandingLocation(convertLocation(getRelationship("landing-location", element)));
-        if (attributes.get("landing-time") != null) {
-            flight.setLandingTime(parseDateTime(((String) attributes.get("landing-time"))));
-        }
+        flight.setLandingTime(parseDateTime(((String) attributes.get("landing-time"))));
         flight.setAircraft(convertAircraft(getRelationship("aircraft", element)));
-        flight.setTowplane(convertAircraft(getRelationship("towplane", element)));
         flight.setPilot1(convertPilot(getRelationship("pilot1", element)));
         flight.setPilot1Role(convertPilotRole(getRelationship("pilot1-role", element)));
         flight.setPilot2(convertPilot(getRelationship("pilot2", element)));
         flight.setPilot2Role(convertPilotRole(getRelationship("pilot2-role", element)));
+        flight.setTowPlane(convertAircraft(getRelationship("tow-plane", element)));
+        flight.setTowPilot(convertPilot(getRelationship("tow-pilot", element)));
+        flight.setTowPlaneLandingTime(parseDateTime(((String) attributes.get("tow-plane-landing-time"))));
+        flight.setCostSharing(convertCostSharing(getRelationship("cost-sharing", element)));
+        flight.setComment((String) attributes.get("comment"));
         return flight;
     }
 
@@ -203,6 +228,16 @@ public class Converter {
         }
     }
 
+    private static CostSharing convertCostSharing(Map<String, Object> json) throws IOException {
+        if (json != null) {
+            CostSharing costSharing = new CostSharing();
+            costSharing.setId(parseLong((String) ((Map<String, Object>) json.get("data")).get("id")));
+            return costSharing;
+        } else {
+            return null;
+        }
+    }
+
     private static Map<String, Object> getRelationship(String name, Element element) {
         if (element.getRelationships() != null) {
             for (Map.Entry<String, Object> relationship : element.getRelationships().entrySet()) {
@@ -215,12 +250,15 @@ public class Converter {
     }
 
     private static Date parseDateTime(String dateTime) {
-        try {
-            return dateTimeFormat.parse(dateTime);
-        } catch (ParseException e) {
-            LOG.error("Unable to convert {}", dateTime, e);
-            return null;
+        Date date = null;
+        if (isNotEmpty(dateTime)) {
+            try {
+                date = dateTimeFormat.parse(dateTime);
+            } catch (ParseException e) {
+                LOG.error("Unable to convert {}", dateTime, e);
+            }
         }
+        return date;
     }
 
 }
