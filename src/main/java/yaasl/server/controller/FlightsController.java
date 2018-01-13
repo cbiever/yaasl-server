@@ -1,5 +1,7 @@
 package yaasl.server.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -7,10 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import yaasl.server.Broadcaster;
+import yaasl.server.exporters.CSVExporter;
+import yaasl.server.exporters.PDFExporter;
+import yaasl.server.jsonapi.Element;
 import yaasl.server.jsonapi.MultiData;
 import yaasl.server.jsonapi.SingleData;
 import yaasl.server.model.Flight;
@@ -20,18 +26,14 @@ import yaasl.server.persistence.CostSharingRepository;
 import yaasl.server.persistence.FlightsRepository;
 import yaasl.server.persistence.LocationRepository;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.HOUR;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.truncate;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static yaasl.server.convert.Converter.*;
@@ -52,30 +54,39 @@ public class FlightsController {
     private CostSharingRepository costSharingRepository;
 
     @Autowired
+    private CSVExporter csvExporter;
+
+    @Autowired
+    private PDFExporter pdfExporter;
+
+    @Autowired
     private Broadcaster broadcaster;
 
     @Value("${provider.ktrax.url}")
     private String ktrax;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @ApiOperation(value = "getFlights", nickname = "getFlights")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = MultiData.class),
+            @ApiResponse(code = 200, message = "Success", response = byte[].class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 422, message = "Unprocessable Entity"),
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(method = GET, produces = "application/vnd.api+json")
-    public ResponseEntity<MultiData> getFlights(@RequestParam("filter[location]") Optional<String> location,
-                                                @RequestParam("filter[date]") Optional<String> date) {
-        MultiData data = new MultiData();
+    public ResponseEntity<byte[]> getFlights(@RequestParam("filter[location]") Optional<String> location,
+                                             @RequestParam("filter[date]") Optional<String> date,
+                                             @RequestParam("format") Optional<String> format) {
+        List<Flight> flights = null;
         if (location.isPresent() && date.isPresent()) {
             Location filterLocation = locationRepository.findByName(location.get().toUpperCase());
             Date filterDate = parseDate(date.get());
             if (filterLocation == null || filterDate == null) {
                 return ResponseEntity.status(UNPROCESSABLE_ENTITY).build();
             }
-            List<Flight> flights = flightsRepository.findFlights(filterLocation, filterDate, addDays(filterDate, 1));
+            flights = flightsRepository.findByLocationAndDate(filterLocation, filterDate, addDays(filterDate, 1));
             Date today = truncate(new Date(), DAY_OF_MONTH);
             flights = flights
                         .stream()
@@ -88,23 +99,39 @@ public class FlightsController {
                             }
                         })
                         .collect(toList());
-            flights.forEach(flight -> data.getData().add(convert(flight)));
         }
         else if (location.isPresent()) {
             Location filterLocation = locationRepository.findByName(location.get().toUpperCase());
             if (filterLocation == null) {
                 return ResponseEntity.status(UNPROCESSABLE_ENTITY).build();
             }
-            flightsRepository
-                    .findByLocation(filterLocation)
-                    .forEach(flight -> data.getData().add(convert(flight)));
+            flights = flightsRepository.findByLocation(filterLocation);
         }
         else {
-            flightsRepository
-                    .findAll()
-                    .forEach(flight -> data.getData().add(convert(flight)));
+            flights = flightsRepository.findAllFlights();
         }
-        return ResponseEntity.ok(data);
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            byte[] data = null;
+            if (!format.isPresent() || "application/vnd.api+json".equals(format.get())) {
+                List<Element> elements = new ArrayList<Element>();
+                flights.forEach(flight -> elements.add(convert(flight)));
+                headers.add("Content-Type", "application/vnd.api+json");
+                data = objectMapper.writeValueAsBytes(new MultiData(elements));
+            } else if (format.isPresent() && "csv".equals(format.get())) {
+                headers.add("Content-Type", "text/csv");
+                data = csvExporter.generate(flights);
+            } else if (format.isPresent() && "pdf".equals(format.get())) {
+                headers.add("Content-Type", "application/pdf");
+                data = pdfExporter.generate(flights);
+            }
+            return new ResponseEntity<byte[]>(data, headers, OK);
+        }
+        catch (Exception e) {
+            LOG.error("Error converting flights", e);
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @ApiOperation(value = "addFlight", nickname = "addFlight")
@@ -182,11 +209,11 @@ public class FlightsController {
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(path = "/costSharings", method = GET, produces = "application/vnd.api+json")
     public MultiData getCostSharings() {
-        MultiData data = new MultiData();
+        List<Element> elements = new ArrayList<Element>();
         costSharingRepository
                 .findAll()
-                .forEach(costSharing -> data.getData().add(convert(costSharing)));
-        return data;
+                .forEach(costSharing -> elements.add(convert(costSharing)));
+        return new MultiData(elements);
     }
 
     @ApiOperation(value = "ktrax", nickname = "ktrax")

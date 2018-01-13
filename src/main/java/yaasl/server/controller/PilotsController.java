@@ -8,9 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import yaasl.server.jsonapi.Element;
 import yaasl.server.jsonapi.MultiData;
 import yaasl.server.persistence.PilotRoleRepository;
 import yaasl.server.persistence.PilotsRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static yaasl.server.convert.Converter.convert;
@@ -36,11 +40,11 @@ public class PilotsController {
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(method = GET, produces = "application/vnd.api+json")
     public MultiData getPilots() {
-        MultiData data = new MultiData();
+        List<Element> pilots = new ArrayList<Element>();
         pilotsRepository
                 .findAll()
-                .forEach(pilot -> data.getData().add(convert(pilot)));
-        return data;
+                .forEach(pilot -> pilots.add(convert(pilot)));
+        return new MultiData(pilots);
     }
 
     @ApiOperation(value = "getPilotRoles", nickname = "getPilotRoles")
@@ -52,11 +56,11 @@ public class PilotsController {
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(path = "/roles", method = GET, produces = "application/vnd.api+json")
     public MultiData getPilotRoles() {
-        MultiData data = new MultiData();
+        List<Element> pilotRoles = new ArrayList<Element>();
         pilotRoleRepository
                 .findAll()
-                .forEach(pilotRole -> data.getData().add(convert(pilotRole)));
-        return data;
+                .forEach(pilotRole -> pilotRoles.add(convert(pilotRole)));
+        return new MultiData(pilotRoles);
     }
 
  }

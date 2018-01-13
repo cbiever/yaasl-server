@@ -7,11 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import yaasl.server.jsonapi.Element;
 import yaasl.server.jsonapi.MultiData;
 import yaasl.server.jsonapi.SingleData;
 import yaasl.server.model.Location;
 import yaasl.server.persistence.LocationRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -35,19 +38,19 @@ public class LocationController {
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(method = GET, produces = "application/vnd.api+json")
     public MultiData getLocations(@RequestParam("filter[location]") Optional<String> locationFilter) {
-        MultiData data = new MultiData();
+        List<Element> locations = new ArrayList<Element>();
         if (locationFilter.isPresent()) {
             Location location = locationRepository.findByName(locationFilter.get().toUpperCase());
             if (location != null) {
-                data.getData().add(convert(location));
+                locations.add(convert(location));
             }
         }
         else {
             locationRepository
                     .findAll()
-                    .forEach(location -> data.getData().add(convert(location)));
+                    .forEach(location -> locations.add(convert(location)));
         }
-        return data;
+        return new MultiData(locations);
     }
 
     @ApiOperation(value = "getLocation", nickname = "getLocation")

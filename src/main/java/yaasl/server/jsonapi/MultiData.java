@@ -1,18 +1,25 @@
 package yaasl.server.jsonapi;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MultiData {
 
-    private List<Element> data = new ArrayList<Element>();
+    private List<Element> elements;
 
-    public List<Element> getData() {
-        return data;
+    public MultiData(List<Element> elements) {
+        this.elements = elements;
     }
 
-    public void setData(List<Element> data) {
-        this.data = data;
+    @JsonProperty("data")
+    public List<Element> getElements() {
+        return elements;
+    }
+
+    public void setElements(List<Element> elements) {
+        this.elements = elements;
     }
 
 }

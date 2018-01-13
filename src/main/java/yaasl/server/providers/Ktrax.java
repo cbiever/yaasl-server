@@ -1,6 +1,5 @@
 package yaasl.server.providers;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +82,7 @@ public class Ktrax {
     private List<Flight> getTodaysFlights(String airport) {
         Date today = truncate(new Date(), DAY_OF_MONTH);
         Location location = locationRepository.findByName(airport);
-        return flightsRepository.findFlights(location, today, addDays(today, 1));
+        return flightsRepository.findByLocationAndDate(location, today, addDays(today, 1));
     }
 
 }
