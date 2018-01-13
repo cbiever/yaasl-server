@@ -43,7 +43,10 @@ public class PDFExporter {
             Source source = new StreamSource(new StringReader(xml));
             transformer.transform(source, result);
             pdf = outputStream.toByteArray();
-FileOutputStream file = new FileOutputStream("/home/casper/flights.pdf");
+FileOutputStream file = new FileOutputStream("/home/casper/flights.xml");
+file.write(xml.getBytes());
+file.close();
+file = new FileOutputStream("/home/casper/flights.pdf");
 file.write(pdf);
 file.close();
         }

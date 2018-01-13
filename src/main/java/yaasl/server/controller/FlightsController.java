@@ -120,7 +120,7 @@ public class FlightsController {
                 headers.add("Content-Type", "application/vnd.api+json");
                 data = objectMapper.writeValueAsBytes(new MultiData(elements));
             } else if (format.isPresent() && "csv".equals(format.get())) {
-                headers.add("Content-Type", "text/csv");
+                headers.add("Content-Type", "text/csv; charset=utf-8");
                 data = csvExporter.generate(flights);
             } else if (format.isPresent() && "pdf".equals(format.get())) {
                 headers.add("Content-Type", "application/pdf");
