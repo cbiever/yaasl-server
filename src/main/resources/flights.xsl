@@ -42,15 +42,19 @@
                         <xsl:attribute name="font-size">
                             <xsl:value-of select="$tableTextSize"/>
                         </xsl:attribute>
-                        <fo:table-column column-width="2.0cm"/>
-                        <fo:table-column column-width="2.0cm"/>
-                        <fo:table-column column-width="2.0cm"/>
-                        <fo:table-column column-width="2.0cm"/>
-                        <fo:table-column column-width="2.0cm"/>
-                        <fo:table-column column-width="2.0cm"/>
-                        <fo:table-column column-width="2.0cm"/>
-                        <fo:table-column column-width="2.0cm"/>
-                        <fo:table-column column-width="2.0cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
+                        <fo:table-column column-width="2.1cm"/>
                         <fo:table-header font-weight="bold" margin-bottom="2mm">
                             <fo:table-row>
                                 <fo:table-cell>
@@ -79,6 +83,18 @@
                                 </fo:table-cell>
                                 <fo:table-cell>
                                     <fo:block>Rolle Pilot 2</fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell>
+                                    <fo:block>Schleppflugzeug</fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell>
+                                    <fo:block>Schlepppilot</fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell>
+                                    <fo:block>Landezeit</fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell>
+                                    <fo:block>Kostenverteilung</fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
                         </fo:table-header>
@@ -130,7 +146,36 @@
                                             <xsl:value-of select="./pilot2Role/description"/>
                                         </fo:block>
                                     </fo:table-cell>
+                                    <fo:table-cell>
+                                        <fo:block>
+                                            <xsl:value-of select="./towPlane/callSign"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell>
+                                        <fo:block>
+                                            <xsl:value-of select="./towPilot/name"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell>
+                                        <fo:block>
+                                            <xsl:value-of select="substring(./towPlaneLandingTime, 12, 5)"/>
+                                        </fo:block>
+                                    </fo:table-cell>
+                                    <fo:table-cell>
+                                        <fo:block>
+                                            <xsl:value-of select="./costSharing/description"/>
+                                        </fo:block>
+                                    </fo:table-cell>
                                 </fo:table-row>
+                                <xsl:if test="./comment">
+                                    <fo:table-row margin-top="2mm">
+                                        <fo:table-cell number-columns-spanned="13">
+                                            <fo:block>
+                                                <xsl:value-of select="./comment"/>
+                                            </fo:block>
+                                        </fo:table-cell>
+                                    </fo:table-row>
+                                </xsl:if>
                             </xsl:for-each>
                         </fo:table-body>
                     </fo:table>

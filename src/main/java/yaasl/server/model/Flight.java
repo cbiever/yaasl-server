@@ -161,6 +161,7 @@ public class Flight {
         this.costSharing = costSharing;
     }
 
+    @Column(length = 300)
     public String getComment() {
         return comment;
     }
