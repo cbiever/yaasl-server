@@ -1,6 +1,5 @@
 package yaasl.server.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -14,8 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import yaasl.server.Broadcaster;
-import yaasl.server.exporters.CSVExporter;
-import yaasl.server.exporters.PDFExporter;
+import yaasl.server.export.CSVExporter;
+import yaasl.server.export.PDFExporter;
 import yaasl.server.jsonapi.Element;
 import yaasl.server.jsonapi.MultiData;
 import yaasl.server.jsonapi.SingleData;
@@ -35,6 +34,9 @@ import static org.apache.commons.lang3.time.DateUtils.truncate;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.status;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static yaasl.server.convert.Converter.*;
 
@@ -84,7 +86,7 @@ public class FlightsController {
             Location filterLocation = locationRepository.findByName(location.get().toUpperCase());
             Date filterDate = parseDate(date.get());
             if (filterLocation == null || filterDate == null) {
-                return ResponseEntity.status(UNPROCESSABLE_ENTITY).build();
+                return status(UNPROCESSABLE_ENTITY).build();
             }
             flights = flightsRepository.findByLocationAndDate(filterLocation, filterDate, addDays(filterDate, 1));
             Date today = truncate(new Date(), DAY_OF_MONTH);
@@ -103,7 +105,7 @@ public class FlightsController {
         else if (location.isPresent()) {
             Location filterLocation = locationRepository.findByName(location.get().toUpperCase());
             if (filterLocation == null) {
-                return ResponseEntity.status(UNPROCESSABLE_ENTITY).build();
+                return status(UNPROCESSABLE_ENTITY).build();
             }
             flights = flightsRepository.findByLocation(filterLocation);
         }
@@ -130,7 +132,7 @@ public class FlightsController {
         }
         catch (Exception e) {
             LOG.error("Error converting flights", e);
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
+            return status(INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -148,11 +150,11 @@ public class FlightsController {
             flightsRepository.save(flight);
             Update update = new Update("add", convert(flight));
             broadcaster.sendUpdate(update, originatorId);
-            return ResponseEntity.ok(new SingleData(convert(flight)));
+            return ok(new SingleData(convert(flight)));
         }
         catch (Exception e) {
             LOG.error("Unable to add flight", e);
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(null);
+            return status(INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -170,11 +172,11 @@ public class FlightsController {
             flightsRepository.save(flight);
             Update update = new Update("update", convert(flight));
             broadcaster.sendUpdate(update, originatorId);
-            return ResponseEntity.ok(new SingleData(convert(flight)));
+            return ok(new SingleData(convert(flight)));
         }
         catch (Exception e) {
             LOG.error("Unable to update flight {}", id, e);
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(null);
+            return status(INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -193,10 +195,10 @@ public class FlightsController {
             Update update = new Update("delete", convert(flight));
             broadcaster.sendUpdate(update, originatorId);
             LOG.debug("flight: {} deleted by originator {}", id, originatorId);
-            return ResponseEntity.ok(new SingleData(convert(flight)));
+            return ok(new SingleData(convert(flight)));
         }
         else {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(null);
+            return badRequest().body(null);
         }
     }
 
@@ -236,7 +238,7 @@ public class FlightsController {
         }
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        return ResponseEntity.ok(response.getBody());
+        return ok(response.getBody());
     }
 
  }

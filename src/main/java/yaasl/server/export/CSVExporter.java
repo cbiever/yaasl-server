@@ -1,4 +1,4 @@
-package yaasl.server.exporters;
+package yaasl.server.export;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

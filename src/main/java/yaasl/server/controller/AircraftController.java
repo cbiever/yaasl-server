@@ -6,18 +6,23 @@ import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import yaasl.server.jsonapi.Element;
 import yaasl.server.jsonapi.MultiData;
 import yaasl.server.model.Aircraft;
+import yaasl.server.model.Flight;
 import yaasl.server.persistence.AircraftRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static yaasl.server.convert.Converter.convert;
 
@@ -38,6 +43,7 @@ public class AircraftController {
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(method = GET, produces = "application/vnd.api+json")
+//    @PreAuthorize("hasAuthority('read:aircraft')")
     public MultiData getAircraft(@RequestParam("filter[callSign]") Optional<String> callSign) {
         List<Element> elements = new ArrayList<Element>();
         if (callSign.isPresent()) {
@@ -50,6 +56,24 @@ public class AircraftController {
             aircraftRepository.findAll().forEach(aircraft -> elements.add(convert(aircraft)));
         }
         return new MultiData(elements);
+    }
+
+    @ApiOperation(value = "getAircraft", nickname = "getAircraft")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = Element.class),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Failure")})
+    @RequestMapping(value="/{id}", method = GET, produces = "application/vnd.api+json")
+    public ResponseEntity<Element> getSingleAircraft(@PathVariable("id") Long id) {
+        Aircraft aircraft = aircraftRepository.findOne(id);
+        if (aircraft != null) {
+            return ok(convert(aircraft));
+        }
+        else {
+            return badRequest().body(null);
+        }
     }
 
  }

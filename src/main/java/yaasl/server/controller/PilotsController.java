@@ -6,16 +6,24 @@ import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import yaasl.server.jsonapi.Element;
 import yaasl.server.jsonapi.MultiData;
+import yaasl.server.model.Pilot;
 import yaasl.server.persistence.PilotRoleRepository;
 import yaasl.server.persistence.PilotsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.status;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static yaasl.server.convert.Converter.convert;
 
@@ -45,6 +53,24 @@ public class PilotsController {
                 .findAll()
                 .forEach(pilot -> pilots.add(convert(pilot)));
         return new MultiData(pilots);
+    }
+
+    @ApiOperation(value = "getPilot", nickname = "getPilot")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = Element.class),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Failure")})
+    @RequestMapping(value="/{id}", method = GET, produces = "application/vnd.api+json")
+    public ResponseEntity<Element> getPilot(@PathVariable("id") Long id) {
+        Pilot pilot = pilotsRepository.findOne(id);
+        if (pilot != null) {
+            return ok(convert(pilot));
+        }
+        else {
+            return badRequest().body(null);
+        }
     }
 
     @ApiOperation(value = "getPilotRoles", nickname = "getPilotRoles")

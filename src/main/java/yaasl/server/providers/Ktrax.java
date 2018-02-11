@@ -74,7 +74,7 @@ public class Ktrax {
                 Map<String, Object> ldg = (Map<String, Object>) sortie.get("ldg");
                 String landingTime = (String) ldg.get("time");
                 String landingAirport = (String) ldg.get("loc");
-                LOG.info("{} takeoff: {} {} landing: {} {}", callsign, takeoffAirport, takeoffTIme, landingAirport, landingTime);
+//                LOG.info("{} takeoff: {} {} landing: {} {}", callsign, takeoffAirport, takeoffTIme, landingAirport, landingTime);
             });
         }
     }
