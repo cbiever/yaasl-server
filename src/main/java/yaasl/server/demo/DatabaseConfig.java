@@ -50,7 +50,7 @@ public class DatabaseConfig {
             aircraftRepository.save(new Aircraft("HB-3447", true, false, 1));
             aircraftRepository.save(new Aircraft("HB-3453", true, false, 1));
 
-            aircraftRepository.save(new Aircraft("HB-HHO",  false, true, 4));
+            aircraftRepository.save(new Aircraft("HB-KHO",  false, true, 4));
             aircraftRepository.save(new Aircraft("HB-2377", false, true, 2));
 
             pilotRoleRepository.save(new PilotRole("Flight instructor", "pilot.role.fi"));

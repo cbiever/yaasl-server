@@ -12,7 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
+import static java.util.Collections.list;
 import static yaasl.server.auth.SecurityConstants.*;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
@@ -22,26 +26,34 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain) throws IOException, ServletException {
-        String header = request.getHeader(HEADER_STRING);
-        if (header == null || !header.startsWith(TOKEN_PREFIX)) {
-            chain.doFilter(request, response);
-            return;
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        UsernamePasswordAuthenticationToken authentication = getAuthentication(getToken(request, response));
+        if (authentication != null) {
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(request, response);
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(HEADER_STRING);
+    private String getToken(HttpServletRequest request, HttpServletResponse response) {
+        String header = request.getHeader(TOKEN_HEADER);
+        if (header == null) {
+            for (String webSocketHeader : request.getHeader("Sec-WebSocket-Protocol").split(",")) {
+                if (webSocketHeader.length() > 10) {
+                    header = webSocketHeader;
+                }
+                else {
+                    response.addHeader("Sec-WebSocket-Protocol", "Yaasl");
+                }
+            };
+        }
+        return header.replace(TOKEN_PREFIX, "");
+    }
+
+    private UsernamePasswordAuthenticationToken getAuthentication(String token) {
         if (token != null) {
-            // parse the token.
             String user = Jwts.parser()
                     .setSigningKey(SECRET.getBytes())
-                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                    .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
             if (user != null) {
