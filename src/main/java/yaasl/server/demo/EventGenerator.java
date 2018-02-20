@@ -1,10 +1,11 @@
-package yaasl.server;
+package yaasl.server.demo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import yaasl.server.Broadcaster;
 import yaasl.server.model.Flight;
 import yaasl.server.model.Update;
 import yaasl.server.persistence.FlightsRepository;

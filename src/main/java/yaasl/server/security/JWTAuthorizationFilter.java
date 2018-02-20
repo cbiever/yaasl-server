@@ -1,10 +1,12 @@
-package yaasl.server.auth;
+package yaasl.server.security;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import yaasl.server.model.Authority;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -12,14 +14,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
-import static java.util.Collections.list;
-import static yaasl.server.auth.SecurityConstants.*;
+import static yaasl.server.security.SecurityConstants.*;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+
+    private Pattern jwtPattern = Pattern.compile("[\\w-]+\\.[\\w-]+\\.[\\w-]+");
 
     public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
@@ -37,12 +41,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     private String getToken(HttpServletRequest request, HttpServletResponse response) {
         String header = request.getHeader(TOKEN_HEADER);
         if (header == null) {
-            for (String webSocketHeader : request.getHeader("Sec-WebSocket-Protocol").split(",")) {
-                if (webSocketHeader.length() > 10) {
+            for (String webSocketHeader : request.getHeader(WEB_SOCKET_TOKEN_HEADER).split(",")) {
+                if (jwtPattern.matcher(webSocketHeader).matches()) {
                     header = webSocketHeader;
                 }
                 else {
-                    response.addHeader("Sec-WebSocket-Protocol", "Yaasl");
+                    response.addHeader(WEB_SOCKET_TOKEN_HEADER, webSocketHeader);
                 }
             };
         }
@@ -57,7 +61,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                     .getBody()
                     .getSubject();
             if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                return new UsernamePasswordAuthenticationToken(user, null, null);
             }
             return null;
         }

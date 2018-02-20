@@ -2,17 +2,25 @@ package yaasl.server.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import yaasl.server.security.UserService;
 import yaasl.server.model.*;
 import yaasl.server.persistence.*;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
+import java.util.List;
 
 import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.addMinutes;
 
 @Configuration
 public class DatabaseConfig {
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private AuthorityRepository authorityRepository;
 
     @Autowired
     private LocationRepository locationRepository;
@@ -34,10 +42,22 @@ public class DatabaseConfig {
 
     @PostConstruct
     public void initDatabase() {
-        if (locationRepository.count() == 0) {
+        if (userService.numberOfUsers() == 0) {
+            Authority admin = new Authority();
+            admin.setAuthority("admin");
+            authorityRepository.save(admin);
+
+            Authority fdl = new Authority();
+            fdl.setAuthority("fdl");
+            authorityRepository.save(fdl);
+
+            userService.addUser("test", "test");
+            userService.addUser("admin", "admin", admin, fdl);
+
             locationRepository.save(new Location("LSZB"));
             locationRepository.save(new Location("LSZW"));
             locationRepository.save(new Location("LSTB"));
+            locationRepository.save(new Location("LSTR"));
 
             aircraftRepository.save(new Aircraft("HB-1766", true, false, 2));
             aircraftRepository.save(new Aircraft("HB-1811", true, false, 2));
@@ -89,6 +109,7 @@ public class DatabaseConfig {
             flight.setPilot2(pilotsRepository.findOne(2L));
             flight.setStartTime(addDays(now, -1));
             flight.setLandingTime(addMinutes(addDays(now, -1), 5));
+            flight.setLocked(true);
             flightsRepository.save(flight);
 
             flight = new Flight();
@@ -108,7 +129,8 @@ public class DatabaseConfig {
             flight.setPilot1(pilotsRepository.findOne(5L));
             flight.setPilot2(pilotsRepository.findOne(6L));
             flight.setStartTime(addMinutes(addDays(now, -1), 5));
-            flight.setLandingTime(now);
+            flight.setLandingTime(addMinutes(addDays(now, -1), 25));
+            flight.setLocked(true);
             flightsRepository.save(flight);
 
             flight = new Flight();
@@ -128,7 +150,8 @@ public class DatabaseConfig {
             flight.setPilot1(pilotsRepository.findOne(7L));
             flight.setPilot2(pilotsRepository.findOne(8L));
             flight.setStartTime(addMinutes(addDays(now, -1), 5));
-            flight.setLandingTime(now);
+            flight.setLandingTime(addMinutes(addDays(now, -1), 45));
+            flight.setLocked(true);
             flightsRepository.save(flight);
 
             flight = new Flight();

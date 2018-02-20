@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static java.lang.Boolean.parseBoolean;
 import static java.lang.Long.parseLong;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -150,6 +151,7 @@ public class Converter {
         if (isNotEmpty(flight.getComment())) {
             element.addAttribute("comment", flight.getComment());
         }
+        element.addAttribute("locked", flight.isLocked());
         return element;
     }
 
@@ -173,6 +175,7 @@ public class Converter {
         flight.setTowPlaneLandingTime(parseDateTime(((String) attributes.get("tow-plane-landing-time"))));
         flight.setCostSharing(convertCostSharing(getRelationship("cost-sharing", element)));
         flight.setComment((String) attributes.get("comment"));
+        flight.setLocked(attributes.get("locked") != null ? (boolean) attributes.get("locked") : true);
         return flight;
     }
 

@@ -1,4 +1,4 @@
-package yaasl.server.auth;
+package yaasl.server.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,17 +10,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import yaasl.server.persistence.YaaslUserService;
 
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-import static yaasl.server.auth.SecurityConstants.SIGN_UP_URL;
+import static yaasl.server.security.SecurityConstants.SIGN_UP_URL;
 
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private YaaslUserService yaaslUserService;
+    private UserService userService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -45,7 +44,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder
-                .userDetailsService(yaaslUserService)
+                .userDetailsService(userService)
                 .passwordEncoder(new BCryptPasswordEncoder());
     }
 
