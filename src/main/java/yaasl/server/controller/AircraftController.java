@@ -43,7 +43,6 @@ public class AircraftController {
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(method = GET, produces = "application/vnd.api+json")
-//    @PreAuthorize("hasAuthority('read:aircraft')")
     public MultiData getAircraft(@RequestParam("filter[callSign]") Optional<String> callSign) {
         List<Element> elements = new ArrayList<Element>();
         if (callSign.isPresent()) {

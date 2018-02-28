@@ -19,12 +19,14 @@ public class User implements UserDetails {
     private boolean credentialsNonExpired;
     private boolean enabled;
     private Set<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
+    private boolean isMD5;
 
     public User() {
         nonExpired = true;
         nonLocked = true;
         credentialsNonExpired = true;
         enabled = true;
+        isMD5 = false;
     }
 
     @Id
@@ -120,6 +122,14 @@ public class User implements UserDetails {
         for (Authority authority : authorities) {
             grantedAuthorities.add(authority);
         }
+    }
+
+    public boolean isMD5() {
+        return isMD5;
+    }
+
+    public void setMD5(boolean MD5) {
+        isMD5 = MD5;
     }
 
 }

@@ -12,6 +12,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.addMinutes;
+import static yaasl.server.security.UserService.ENCRYPTION_METHOD.MD5;
 
 @Configuration
 public class DatabaseConfig {
@@ -43,16 +44,14 @@ public class DatabaseConfig {
     @PostConstruct
     public void initDatabase() {
         if (userService.numberOfUsers() == 0) {
-            Authority admin = new Authority();
-            admin.setAuthority("admin");
+            Authority admin = new Authority("admin");
             authorityRepository.save(admin);
 
-            Authority fdl = new Authority();
-            fdl.setAuthority("fdl");
+            Authority fdl = new Authority("fdl");
             authorityRepository.save(fdl);
 
             userService.addUser("test", "test");
-            userService.addUser("admin", "admin", admin, fdl);
+            userService.addUser("admin", "21232f297a57a5a743894a0e4a801fc3", MD5, admin, fdl);
 
             locationRepository.save(new Location("LSZB"));
             locationRepository.save(new Location("LSZW"));

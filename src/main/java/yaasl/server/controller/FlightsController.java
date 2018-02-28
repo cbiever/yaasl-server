@@ -25,6 +25,7 @@ import yaasl.server.persistence.CostSharingRepository;
 import yaasl.server.persistence.FlightsRepository;
 import yaasl.server.persistence.LocationRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static java.util.Calendar.DAY_OF_MONTH;
@@ -166,7 +167,11 @@ public class FlightsController {
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(value="/{id}", method = PATCH)
-    public ResponseEntity<SingleData> updateFlight(@PathVariable("id") Long id, @RequestBody SingleData data, @RequestHeader(value="X-Originator-ID") String originatorId) {
+    public ResponseEntity<SingleData> updateFlight(@PathVariable("id") Long id,
+                                                   @RequestBody SingleData data,
+                                                   @RequestHeader(value="X-Originator-ID") String originatorId,
+                                                   HttpServletRequest request) {
+LOG.info("is admin: {}", request.isUserInRole("admin"));
         try {
             Flight flight = convert(data.getData());
             flightsRepository.save(flight);

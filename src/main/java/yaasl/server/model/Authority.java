@@ -16,6 +16,13 @@ public class Authority implements GrantedAuthority {
     private String authority;
     private Set<User> users;
 
+    public Authority() {
+    }
+
+    public Authority(String authority) {
+        this.authority = authority;
+    }
+
     @Id
     @GeneratedValue(strategy=AUTO)
     public Long getId() {

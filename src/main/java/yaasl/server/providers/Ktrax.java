@@ -43,7 +43,7 @@ public class Ktrax {
 
     private JsonParser jsonParser = JsonParserFactory.getJsonParser();
 
-    @Scheduled(cron = "${provider.ktrax.cron}")
+//    @Scheduled(cron = "${provider.ktrax.cron}")
     public void query() {
         if (airports != null) {
             airports.forEach(airport -> {

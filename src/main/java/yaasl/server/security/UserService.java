@@ -15,13 +15,18 @@ import yaasl.server.persistence.UserRepository;
 import java.util.Collections;
 import java.util.Set;
 
+import static yaasl.server.security.UserService.ENCRYPTION_METHOD.BCRYPT;
+
 @Component
 public class UserService implements UserDetailsService {
+
+    public enum ENCRYPTION_METHOD { MD5, BCRYPT };
 
     @Autowired
     private UserRepository userRepository;
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -33,9 +38,19 @@ public class UserService implements UserDetailsService {
     }
 
     public void addUser(String username, String password, Authority... authorities) {
+        addUser(username, password, BCRYPT, authorities);
+    }
+
+    public void addUser(String username, String password, ENCRYPTION_METHOD encryption_method, Authority... authorities) {
         User user = new User();
         user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
+        if (encryption_method == BCRYPT) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+        else {
+            user.setPassword(password);
+            user.setMD5(true);
+        }
         for (Authority authority : authorities) {
             user.addAuthority(authority);
         }
