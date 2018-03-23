@@ -6,9 +6,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.*;
 
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.AUTO;
 
 @Entity
+@Table(name="yaasl_user")
 public class User implements UserDetails {
 
     private Long id;
@@ -20,6 +22,7 @@ public class User implements UserDetails {
     private boolean enabled;
     private Set<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
     private boolean isMD5;
+    private Set<RememberMeToken> tokens;
 
     public User() {
         nonExpired = true;
@@ -130,6 +133,15 @@ public class User implements UserDetails {
 
     public void setMD5(boolean MD5) {
         isMD5 = MD5;
+    }
+
+    @OneToMany(mappedBy = "user", fetch = LAZY)
+    public Set<RememberMeToken> getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(Set<RememberMeToken> tokens) {
+        this.tokens = tokens;
     }
 
 }

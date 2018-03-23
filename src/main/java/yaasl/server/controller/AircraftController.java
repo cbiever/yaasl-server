@@ -37,28 +37,6 @@ public class AircraftController {
 
     @ApiOperation(value = "getAircraft", nickname = "getAircraft")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = MultiData.class),
-            @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 403, message = "Forbidden"),
-            @ApiResponse(code = 404, message = "Not Found"),
-            @ApiResponse(code = 500, message = "Failure")})
-    @RequestMapping(method = GET, produces = "application/vnd.api+json")
-    public MultiData getAircraft(@RequestParam("filter[callSign]") Optional<String> callSign) {
-        List<Element> elements = new ArrayList<Element>();
-        if (callSign.isPresent()) {
-            Aircraft aircraft = aircraftRepository.findAircraftByCallSign(callSign.get().toUpperCase());
-            if (aircraft != null) {
-                elements.add(convert(aircraft));
-            }
-        }
-        else {
-            aircraftRepository.findAll().forEach(aircraft -> elements.add(convert(aircraft)));
-        }
-        return new MultiData(elements);
-    }
-
-    @ApiOperation(value = "getAircraft", nickname = "getAircraft")
-    @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Element.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
@@ -73,6 +51,28 @@ public class AircraftController {
         else {
             return badRequest().body(null);
         }
+    }
+
+    @ApiOperation(value = "searchAircraft", nickname = "searchAircraft")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = MultiData.class),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Not Found"),
+            @ApiResponse(code = 500, message = "Failure")})
+    @RequestMapping(method = GET, produces = "application/vnd.api+json")
+    public MultiData searchAircraft(@RequestParam("filter[callSign]") Optional<String> callSign) {
+        List<Element> elements = new ArrayList<Element>();
+        if (callSign.isPresent()) {
+            Aircraft aircraft = aircraftRepository.findAircraftByCallSign(callSign.get().toUpperCase());
+            if (aircraft != null) {
+                elements.add(convert(aircraft));
+            }
+        }
+        else {
+            aircraftRepository.findAll().forEach(aircraft -> elements.add(convert(aircraft)));
+        }
+        return new MultiData(elements);
     }
 
  }

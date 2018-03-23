@@ -7,23 +7,31 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.stereotype.Component;
 import yaasl.server.model.Authority;
+import yaasl.server.model.RememberMeToken;
 import yaasl.server.model.User;
+import yaasl.server.persistence.RememberMeTokenRepository;
 import yaasl.server.persistence.UserRepository;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.Set;
 
 import static yaasl.server.security.UserService.ENCRYPTION_METHOD.BCRYPT;
 
 @Component
-public class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService, PersistentTokenRepository {
 
     public enum ENCRYPTION_METHOD { MD5, BCRYPT };
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RememberMeTokenRepository rememberMeTokenRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -59,6 +67,41 @@ public class UserService implements UserDetailsService {
 
     public long numberOfUsers() {
         return userRepository.count();
+    }
+
+    @Override
+    public void createNewToken(PersistentRememberMeToken token) {
+        User user = userRepository.findByUsername(token.getUsername());
+        RememberMeToken rememberMeToken = new RememberMeToken(token, user);
+        rememberMeTokenRepository.save(rememberMeToken);
+    }
+
+    @Override
+    public void updateToken(String series, String tokenValue, Date lastUsed) {
+        RememberMeToken rememberMeToken = rememberMeTokenRepository.findBySeries(series);
+        if (rememberMeToken != null) {
+            rememberMeToken.setTokenValue(tokenValue);
+            rememberMeToken.setDate(lastUsed);
+            rememberMeTokenRepository.save(rememberMeToken);
+        }
+    }
+
+    @Override
+    public PersistentRememberMeToken getTokenForSeries(String series) {
+        RememberMeToken rememberMeToken = rememberMeTokenRepository.findBySeries(series);
+        if (rememberMeToken != null) {
+            return new PersistentRememberMeToken(rememberMeToken.getUsername(), rememberMeToken.getSeries(), rememberMeToken.getTokenValue(), rememberMeToken.getDate());
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Override
+    public void removeUserTokens(String username) {
+        User user = userRepository.findByUsername(username);
+        user.setTokens(null);
+        userRepository.save(user);
     }
 
 }

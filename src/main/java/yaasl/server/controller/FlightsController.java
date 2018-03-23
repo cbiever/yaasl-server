@@ -81,8 +81,9 @@ public class FlightsController {
     @RequestMapping(method = GET, produces = "application/vnd.api+json")
     public ResponseEntity<byte[]> getFlights(@RequestParam("filter[location]") Optional<String> location,
                                              @RequestParam("filter[date]") Optional<String> date,
-                                             @RequestParam("format") Optional<String> format) {
-        List<Flight> flights = null;
+                                             @RequestParam("format") Optional<String> format,
+                                             @RequestParam("i18n") Optional<String> translations) {
+        List<Flight> flights;
         if (location.isPresent() && date.isPresent()) {
             Location filterLocation = locationRepository.findByName(location.get().toUpperCase());
             Date filterDate = parseDate(date.get());
@@ -127,7 +128,7 @@ public class FlightsController {
                 data = csvExporter.generate(flights);
             } else if (format.isPresent() && "pdf".equals(format.get())) {
                 headers.add("Content-Type", "application/pdf");
-                data = Base64.getEncoder().encode(pdfExporter.generate(flights));
+                data = Base64.getEncoder().encode(pdfExporter.generate(flights, location, date, translations));
             }
             return new ResponseEntity<byte[]>(data, headers, OK);
         }

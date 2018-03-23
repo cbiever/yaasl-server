@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsltHelper="ch.visana.bpm.erfa.util.XsltHelper"
-                xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/XSL/Format">
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:yaasl="yaasl.server.export.XsltHelper"
+                xmlns="http://www.w3.org/1999/XSL/Format">
 
     <xsl:output method="xml" indent="yes"/>
+
+    <xsl:param name="translations"/>
 
     <xsl:variable name="textSize">8pt</xsl:variable>
     <xsl:variable name="tableTextSize">6pt</xsl:variable>
@@ -11,7 +15,7 @@
     <xsl:variable name="headerTextSize">10pt</xsl:variable>
     <xsl:variable name="apos">'</xsl:variable>
 
-    <xsl:template match="/flights">
+    <xsl:template match="/data">
         <fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
             <fo:layout-master-set>
                 <fo:simple-page-master master-name="first"
@@ -26,7 +30,6 @@
                     <fo:region-after extent="1.5cm"/>
                 </fo:simple-page-master>
             </fo:layout-master-set>
-
             <fo:page-sequence master-reference="first">
                 <fo:static-content flow-name="xsl-region-after">
                     <fo:block line-height="10pt" text-align="end" margin-top="2cm">
@@ -38,6 +41,18 @@
                     </fo:block>
                 </fo:static-content>
                 <fo:flow flow-name="xsl-region-body">
+                    <fo:block font-weight="bold" margin-top="1mm" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+                        <xsl:attribute name="font-size">
+                            <xsl:value-of select="$textSize"/>
+                        </xsl:attribute>
+                        <xsl:value-of select="concat(yaasl:translate('location', $translations), ': ', location)"/>
+                    </fo:block>
+                    <fo:block font-weight="bold" margin-top="1mm" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+                        <xsl:attribute name="font-size">
+                            <xsl:value-of select="$textSize"/>
+                        </xsl:attribute>
+                        <xsl:value-of select="concat(yaasl:translate('date', $translations), ': ', yaasl:formatDate(date, 'yyyy.MM.dd'))"/>
+                    </fo:block>
                     <fo:table table-layout="fixed" width="100%" margin-top="2mm">
                         <xsl:attribute name="font-size">
                             <xsl:value-of select="$tableTextSize"/>
@@ -58,52 +73,52 @@
                         <fo:table-header font-weight="bold" margin-bottom="2mm">
                             <fo:table-row>
                                 <fo:table-cell>
-                                    <fo:block>Rufzeichen</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('call.sign', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Startzeit</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('start.time', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Startort</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('start.location', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Landezeit</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('landing.time', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Landeort</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('landing.location', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Pilot 1</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('pilot.1', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Rolle Pilot 1</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('pilot.role', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Pilot 2</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('pilot.2', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Rolle Pilot 2</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('pilot.role', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Schleppflugzeug</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('call.sign.tow.plane', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Schlepppilot</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('tow.pilot', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Landezeit</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('landing.time', $translations)"/></fo:block>
                                 </fo:table-cell>
                                 <fo:table-cell>
-                                    <fo:block>Kostenverteilung</fo:block>
+                                    <fo:block><xsl:value-of select="yaasl:translate('cost.sharing', $translations)"/></fo:block>
                                 </fo:table-cell>
                             </fo:table-row>
                         </fo:table-header>
                         <fo:table-body>
-                            <xsl:for-each select="item">
+                            <xsl:for-each select="flights/flight">
                                 <fo:table-row margin-top="2mm">
                                     <fo:table-cell>
                                         <fo:block>
-                                            <xsl:value-of select="./aircraft/callSign"/>
+                                            <xsl:value-of select="aircraft/callSign"/>
                                         </fo:block>
                                     </fo:table-cell>
                                     <fo:table-cell>
@@ -163,7 +178,7 @@
                                     </fo:table-cell>
                                     <fo:table-cell>
                                         <fo:block>
-                                            <xsl:value-of select="./costSharing/description"/>
+                                            <fo:block><xsl:value-of select="yaasl:translate(./costSharing/i18n, $translations)"/></fo:block>
                                         </fo:block>
                                     </fo:table-cell>
                                 </fo:table-row>
