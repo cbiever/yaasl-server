@@ -1,0 +1,41 @@
+databaseChangeLog:
+- changeSet:
+    id: 300
+    author: yaasl
+    changes:
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 1
+          - column:
+              name: name
+              value: LSZB
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 2
+          - column:
+              name: name
+              value: LSZW
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 3
+          - column:
+              name: name
+              value: LSTB
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 4
+          - column:
+              name: name
+              value: LSTR
+        tableName: location

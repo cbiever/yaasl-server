@@ -9,18 +9,14 @@ import yaasl.server.model.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
 
-import static java.lang.Boolean.parseBoolean;
 import static java.lang.Long.parseLong;
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.time.DateUtils.truncate;
 
 public class Converter {
 
-    private static DateTimeFormatter isoDateTimeFormat = ISO_DATE_TIME;
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
@@ -151,6 +147,7 @@ public class Converter {
         if (isNotEmpty(flight.getComment())) {
             element.addAttribute("comment", flight.getComment());
         }
+        element.addAttribute("editable", flight.isEditable());
         element.addAttribute("locked", flight.isLocked());
         return element;
     }
@@ -175,14 +172,16 @@ public class Converter {
         flight.setTowPlaneLandingTime(parseDateTime(((String) attributes.get("tow-plane-landing-time"))));
         flight.setCostSharing(convertCostSharing(getRelationship("cost-sharing", element)));
         flight.setComment((String) attributes.get("comment"));
-        flight.setLocked(attributes.get("locked") != null ? (boolean) attributes.get("locked") : true);
+        flight.setEditable(getAttribute("editable", false, attributes));
+        flight.setLocked(getAttribute("locked", true, attributes));
         return flight;
     }
 
     public static Date parseDate(String date) {
         try {
             return dateFormat.parse(date);
-        } catch (ParseException e) {
+        }
+        catch (ParseException e) {
             return null;
         }
     }
@@ -196,7 +195,8 @@ public class Converter {
             Location location = new Location();
             location.setId(parseLong((String) ((Map<String, Object>) json.get("data")).get("id")));
             return location;
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -206,7 +206,8 @@ public class Converter {
             Aircraft aircraft = new Aircraft();
             aircraft.setId(parseLong((String) ((Map<String, Object>) json.get("data")).get("id")));
             return aircraft;
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -216,7 +217,8 @@ public class Converter {
             Pilot pilot = new Pilot();
             pilot.setId(parseLong((String) ((Map<String, Object>) json.get("data")).get("id")));
             return pilot;
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -226,7 +228,8 @@ public class Converter {
             PilotRole pilotRole = new PilotRole();
             pilotRole.setId(parseLong((String) ((Map<String, Object>) json.get("data")).get("id")));
             return pilotRole;
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -236,7 +239,8 @@ public class Converter {
             CostSharing costSharing = new CostSharing();
             costSharing.setId(parseLong((String) ((Map<String, Object>) json.get("data")).get("id")));
             return costSharing;
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -257,11 +261,21 @@ public class Converter {
         if (isNotEmpty(dateTime)) {
             try {
                 date = dateTimeFormat.parse(dateTime);
-            } catch (ParseException e) {
+            }
+            catch (ParseException e) {
                 LOG.error("Unable to convert {}", dateTime, e);
             }
         }
         return date;
+    }
+
+    public static <T> T getAttribute(String attributeName, T defaultValue, Map<String, Object> attributes) {
+        if (attributes.get(attributeName) != null) {
+            return (T) attributes.get(attributeName);
+        }
+        else {
+            return defaultValue;
+        }
     }
 
 }

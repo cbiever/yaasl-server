@@ -2,170 +2,122 @@ package yaasl.server.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import yaasl.server.security.UserService;
-import yaasl.server.model.*;
-import yaasl.server.persistence.*;
+import org.springframework.context.annotation.Profile;
+import yaasl.server.model.Aircraft;
+import yaasl.server.model.Flight;
+import yaasl.server.model.Pilot;
+import yaasl.server.persistence.AircraftRepository;
+import yaasl.server.persistence.FlightRepository;
+import yaasl.server.persistence.LocationRepository;
+import yaasl.server.persistence.PilotRepository;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
-import java.util.List;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.addMinutes;
-import static yaasl.server.security.UserService.ENCRYPTION_METHOD.MD5;
 
 @Configuration
+@Profile("demo")
 public class DatabaseConfig {
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private AuthorityRepository authorityRepository;
 
     @Autowired
     private LocationRepository locationRepository;
 
     @Autowired
-    private PilotRoleRepository pilotRoleRepository;
-
-    @Autowired
-    private PilotsRepository pilotsRepository;
+    private PilotRepository pilotRepository;
 
     @Autowired
     private AircraftRepository aircraftRepository;
 
     @Autowired
-    private FlightsRepository flightsRepository;
-
-    @Autowired
-    private CostSharingRepository costSharingRepository;
+    private FlightRepository flightRepository;
 
     @PostConstruct
     public void initDatabase() {
-        if (userService.numberOfUsers() == 0) {
-            Authority admin = new Authority("admin");
-            authorityRepository.save(admin);
+        Date now = new Date();
 
-            Authority fdl = new Authority("fdl");
-            authorityRepository.save(fdl);
+        Flight flight = new Flight();
+        flight.setStartLocation(locationRepository.findByName("LSZW"));
+        flight.setLandingLocation(locationRepository.findByName("LSZW"));
+        flight.setAircraft(getAircraft(1L));
+        flight.setPilot1(getPilot(1L));
+        flight.setPilot2(getPilot(2L));
+        flight.setStartTime(addDays(now, -1));
+        flight.setLandingTime(addMinutes(addDays(now, -1), 5));
+        flight.setEditable(false);
+        flight.setLocked(true);
+        flightRepository.save(flight);
 
-            userService.addUser("test", "test");
-            userService.addUser("admin", "21232f297a57a5a743894a0e4a801fc3", MD5, admin, fdl);
+        flight = new Flight();
+        flight.setStartLocation(locationRepository.findByName("LSZW"));
+        flight.setLandingLocation(locationRepository.findByName("LSZW"));
+        flight.setAircraft(getAircraft(2L));
+        flight.setPilot1(getPilot(3L));
+        flight.setPilot2(getPilot(4L));
+        flight.setStartTime(now);
+        flight.setLandingTime(addMinutes(now, 5));
+        flight.setEditable(true);
+        flight.setLocked(false);
+        flightRepository.save(flight);
 
-            locationRepository.save(new Location("LSZB"));
-            locationRepository.save(new Location("LSZW"));
-            locationRepository.save(new Location("LSTB"));
-            locationRepository.save(new Location("LSTR"));
+        flight = new Flight();
+        flight.setStartLocation(locationRepository.findByName("LSZB"));
+        flight.setLandingLocation(locationRepository.findByName("LSZB"));
+        flight.setAircraft(getAircraft(3L));
+        flight.setPilot1(getPilot(5L));
+        flight.setPilot2(getPilot(6L));
+        flight.setStartTime(addMinutes(addDays(now, -1), 5));
+        flight.setLandingTime(addMinutes(addDays(now, -1), 25));
+        flight.setEditable(false);
+        flight.setLocked(true);
+        flightRepository.save(flight);
 
-            aircraftRepository.save(new Aircraft("HB-1766", true, false, 2));
-            aircraftRepository.save(new Aircraft("HB-1811", true, false, 2));
-            aircraftRepository.save(new Aircraft("HB-3131", true, false, 2));
-            aircraftRepository.save(new Aircraft("HB-3362", true, false, 2));
-            aircraftRepository.save(new Aircraft("HB-3411", true, false, 2));
-            aircraftRepository.save(new Aircraft("HB-3022", true, false, 1));
-            aircraftRepository.save(new Aircraft("HB-3043", true, false, 1));
-            aircraftRepository.save(new Aircraft("HB-3299", true, false, 1));
-            aircraftRepository.save(new Aircraft("HB-3447", true, false, 1));
-            aircraftRepository.save(new Aircraft("HB-3453", true, false, 1));
+        flight = new Flight();
+        flight.setStartLocation(locationRepository.findByName("LSZB"));
+        flight.setLandingLocation(locationRepository.findByName("LSZB"));
+        flight.setAircraft(getAircraft(4L));
+        flight.setPilot1(getPilot(7L));
+        flight.setPilot2(getPilot(8L));
+        flight.setStartTime(now);
+        flight.setLandingTime(addMinutes(now, 5));
+        flight.setEditable(true);
+        flight.setLocked(false);
+        flightRepository.save(flight);
 
-            aircraftRepository.save(new Aircraft("HB-KHO",  false, true, 4));
-            aircraftRepository.save(new Aircraft("HB-2377", false, true, 2));
+        flight = new Flight();
+        flight.setStartLocation(locationRepository.findByName("LSTB"));
+        flight.setLandingLocation(locationRepository.findByName("LSTB"));
+        flight.setAircraft(getAircraft(5L));
+        flight.setPilot1(getPilot(7L));
+        flight.setPilot2(getPilot(8L));
+        flight.setStartTime(addMinutes(addDays(now, -1), 5));
+        flight.setLandingTime(addMinutes(addDays(now, -1), 45));
+        flight.setEditable(false);
+        flight.setLocked(true);
+        flightRepository.save(flight);
 
-            pilotRoleRepository.save(new PilotRole("Flight instructor", "pilot.role.fi"));
-            pilotRoleRepository.save(new PilotRole("Pilot", "pilot.role.pilot"));
-            pilotRoleRepository.save(new PilotRole("Student", "pilot.role.student"));
-            pilotRoleRepository.save(new PilotRole("Passenger", "pilot.role.passenger"));
+        flight = new Flight();
+        flight.setStartLocation(locationRepository.findByName("LSTB"));
+        flight.setLandingLocation(locationRepository.findByName("LSTB"));
+        flight.setAircraft(getAircraft(6L));
+        flight.setPilot1(getPilot(9L));
+        flight.setStartTime(now);
+        flight.setLandingTime(addMinutes(now, 5));
+        flight.setEditable(true);
+        flight.setLocked(false);
+        flightRepository.save(flight);
+    }
 
-            pilotsRepository.save(new Pilot("Han Solo", pilotRoleRepository.findByDescription("Flight instructor"), false));
-            pilotsRepository.save(new Pilot("Chewbacca", pilotRoleRepository.findByDescription("Student"), false));
-            pilotsRepository.save(new Pilot("Luke Skywalker", pilotRoleRepository.findByDescription("Pilot"), false));
-            pilotsRepository.save(new Pilot("Jabba the Hutt", pilotRoleRepository.findByDescription("Student"), true));
+    private Aircraft getAircraft(long id) {
+        Optional<Aircraft> aircraft = aircraftRepository.findById(id);
+        return aircraft.isPresent() ? aircraft.get() : null;
+    }
 
-            pilotsRepository.save(new Pilot("Black Mamba", pilotRoleRepository.findByDescription("Flight instructor"), false));
-            pilotsRepository.save(new Pilot("Bill", pilotRoleRepository.findByDescription("Flight instructor"), false));
-            pilotsRepository.save(new Pilot("Hattori Hanzo", pilotRoleRepository.findByDescription("Flight instructor"), true));
-            pilotsRepository.save(new Pilot("O-Ren Ishii", pilotRoleRepository.findByDescription("Student"), false));
-            pilotsRepository.save(new Pilot("Gogo Yubari", pilotRoleRepository.findByDescription("Passenger"), false));
-
-            pilotsRepository.save(new Pilot("Keyser Soze", pilotRoleRepository.findByDescription("Flight instructor"), true));
-            pilotsRepository.save(new Pilot("McManus", pilotRoleRepository.findByDescription("Student"), false));
-            pilotsRepository.save(new Pilot("Dean Keaton", pilotRoleRepository.findByDescription("Student"), false));
-            pilotsRepository.save(new Pilot("Fred Fenster", pilotRoleRepository.findByDescription("Pilot"), false));
-            pilotsRepository.save(new Pilot("Todd Hockney", pilotRoleRepository.findByDescription("Pilot"), false));
-            pilotsRepository.save(new Pilot("Verbal Kint", pilotRoleRepository.findByDescription("Flight instructor"), false));
-            pilotsRepository.save(new Pilot("Dave Kujan", pilotRoleRepository.findByDescription("Passenger"), false));
-            pilotsRepository.save(new Pilot("Edie Finneran", pilotRoleRepository.findByDescription("Student"), false));
-            pilotsRepository.save(new Pilot("Mr. Kobayashi", pilotRoleRepository.findByDescription("Passenger"), true));
-
-            Date now = new Date();
-
-            Flight flight = new Flight();
-            flight.setStartLocation(locationRepository.findByName("LSZW"));
-            flight.setLandingLocation(locationRepository.findByName("LSZW"));
-            flight.setAircraft(aircraftRepository.findOne(1L));
-            flight.setPilot1(pilotsRepository.findOne(1L));
-            flight.setPilot2(pilotsRepository.findOne(2L));
-            flight.setStartTime(addDays(now, -1));
-            flight.setLandingTime(addMinutes(addDays(now, -1), 5));
-            flight.setLocked(true);
-            flightsRepository.save(flight);
-
-            flight = new Flight();
-            flight.setStartLocation(locationRepository.findByName("LSZW"));
-            flight.setLandingLocation(locationRepository.findByName("LSZW"));
-            flight.setAircraft(aircraftRepository.findOne(2L));
-            flight.setPilot1(pilotsRepository.findOne(3L));
-            flight.setPilot2(pilotsRepository.findOne(4L));
-            flight.setStartTime(now);
-            flight.setLandingTime(addMinutes(now, 5));
-            flightsRepository.save(flight);
-
-            flight = new Flight();
-            flight.setStartLocation(locationRepository.findByName("LSZB"));
-            flight.setLandingLocation(locationRepository.findByName("LSZB"));
-            flight.setAircraft(aircraftRepository.findOne(3L));
-            flight.setPilot1(pilotsRepository.findOne(5L));
-            flight.setPilot2(pilotsRepository.findOne(6L));
-            flight.setStartTime(addMinutes(addDays(now, -1), 5));
-            flight.setLandingTime(addMinutes(addDays(now, -1), 25));
-            flight.setLocked(true);
-            flightsRepository.save(flight);
-
-            flight = new Flight();
-            flight.setStartLocation(locationRepository.findByName("LSZB"));
-            flight.setLandingLocation(locationRepository.findByName("LSZB"));
-            flight.setAircraft(aircraftRepository.findOne(4L));
-            flight.setPilot1(pilotsRepository.findOne(7L));
-            flight.setPilot2(pilotsRepository.findOne(8L));
-            flight.setStartTime(now);
-            flight.setLandingTime(addMinutes(now, 5));
-            flightsRepository.save(flight);
-
-            flight = new Flight();
-            flight.setStartLocation(locationRepository.findByName("LSTB"));
-            flight.setLandingLocation(locationRepository.findByName("LSTB"));
-            flight.setAircraft(aircraftRepository.findOne(5L));
-            flight.setPilot1(pilotsRepository.findOne(7L));
-            flight.setPilot2(pilotsRepository.findOne(8L));
-            flight.setStartTime(addMinutes(addDays(now, -1), 5));
-            flight.setLandingTime(addMinutes(addDays(now, -1), 45));
-            flight.setLocked(true);
-            flightsRepository.save(flight);
-
-            flight = new Flight();
-            flight.setStartLocation(locationRepository.findByName("LSTB"));
-            flight.setLandingLocation(locationRepository.findByName("LSTB"));
-            flight.setAircraft(aircraftRepository.findOne(6L));
-            flight.setPilot1(pilotsRepository.findOne(9L));
-            flight.setStartTime(now);
-            flight.setLandingTime(addMinutes(now, 5));
-            flightsRepository.save(flight);
-
-            costSharingRepository.save(new CostSharing("Student", "cost.sharing.student"));
-            costSharingRepository.save(new CostSharing("FiftyFifty", "cost.sharing.fifty.fifty"));
-        }
-
+    private Pilot getPilot(long id) {
+        Optional<Pilot> pilot = pilotRepository.findById(id);
+        return pilot.isPresent() ? pilot.get() : null;
     }
 
 }

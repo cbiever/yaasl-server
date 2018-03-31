@@ -7,12 +7,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import yaasl.server.model.Flight;
 import yaasl.server.model.Location;
-import yaasl.server.persistence.FlightsRepository;
+import yaasl.server.persistence.FlightRepository;
 import yaasl.server.persistence.LocationRepository;
 
 import java.util.*;
@@ -36,7 +35,7 @@ public class Ktrax {
     private List<String> airports;
 
     @Autowired
-    private FlightsRepository flightsRepository;
+    private FlightRepository flightRepository;
 
     @Autowired
     private LocationRepository locationRepository;
@@ -82,7 +81,7 @@ public class Ktrax {
     private List<Flight> getTodaysFlights(String airport) {
         Date today = truncate(new Date(), DAY_OF_MONTH);
         Location location = locationRepository.findByName(airport);
-        return flightsRepository.findByLocationAndDate(location, today, addDays(today, 1));
+        return flightRepository.findByLocationAndDate(location, today, addDays(today, 1));
     }
 
 }

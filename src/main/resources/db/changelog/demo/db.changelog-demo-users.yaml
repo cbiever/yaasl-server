@@ -1,0 +1,119 @@
+databaseChangeLog:
+- changeSet:
+    id: 500
+    author: yaasl
+    changes:
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 1
+          - column:
+              name: authority
+              value: admin
+        tableName: authority
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 2
+          - column:
+              name: authority
+              value: fdl
+        tableName: authority
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 1
+          - column:
+              name: md5
+              value: false
+          - column:
+              name: account_non_expired
+              value: true
+          - column:
+              name: account_non_locked
+              value: true
+          - column:
+              name: credentials_non_expired
+              value: true
+          - column:
+              name: enabled
+              value: true
+          - column:
+              name: credentials_non_expired
+              value: true
+          - column:
+              name: password
+              value: $2a$10$CumfO9XC1GjB.svgwW837.y1Y3AKexF62Sw28Jd7Z7pIey8UEupga
+          - column:
+              name: username
+              value: test
+        tableName: yaasl_user
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 2
+          - column:
+              name: md5
+              value: true
+          - column:
+              name: account_non_expired
+              value: true
+          - column:
+              name: account_non_locked
+              value: true
+          - column:
+              name: credentials_non_expired
+              value: true
+          - column:
+              name: enabled
+              value: true
+          - column:
+              name: credentials_non_expired
+              value: true
+          - column:
+              name: password
+              value: 21232f297a57a5a743894a0e4a801fc3
+          - column:
+              name: username
+              value: admin
+        tableName: yaasl_user
+    - insert:
+        columns:
+          - column:
+              name: authority_id
+              value: 1
+          - column:
+              name: users_id
+              value: 2
+        tableName: authority_users
+    - insert:
+        columns:
+          - column:
+              name: authority_id
+              value: 2
+          - column:
+              name: users_id
+              value: 1
+        tableName: authority_users
+    - insert:
+        columns:
+          - column:
+              name: user_id
+              value: 1
+          - column:
+              name: authority_id
+              value: 2
+        tableName: user_authority
+    - insert:
+        columns:
+          - column:
+              name: user_id
+              value: 2
+          - column:
+              name: authority_id
+              value: 1
+        tableName: user_authority

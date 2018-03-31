@@ -22,7 +22,7 @@ import yaasl.server.model.Flight;
 import yaasl.server.model.Location;
 import yaasl.server.model.Update;
 import yaasl.server.persistence.CostSharingRepository;
-import yaasl.server.persistence.FlightsRepository;
+import yaasl.server.persistence.FlightRepository;
 import yaasl.server.persistence.LocationRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,9 +32,7 @@ import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.truncate;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.status;
@@ -48,7 +46,7 @@ public class FlightsController {
     private Logger LOG = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private FlightsRepository flightsRepository;
+    private FlightRepository flightRepository;
 
     @Autowired
     private LocationRepository locationRepository;
@@ -90,7 +88,7 @@ public class FlightsController {
             if (filterLocation == null || filterDate == null) {
                 return status(UNPROCESSABLE_ENTITY).build();
             }
-            flights = flightsRepository.findByLocationAndDate(filterLocation, filterDate, addDays(filterDate, 1));
+            flights = flightRepository.findByLocationAndDate(filterLocation, filterDate, addDays(filterDate, 1));
             Date today = truncate(new Date(), DAY_OF_MONTH);
             flights = flights
                         .stream()
@@ -109,10 +107,10 @@ public class FlightsController {
             if (filterLocation == null) {
                 return status(UNPROCESSABLE_ENTITY).build();
             }
-            flights = flightsRepository.findByLocation(filterLocation);
+            flights = flightRepository.findByLocation(filterLocation);
         }
         else {
-            flights = flightsRepository.findAllFlights();
+            flights = flightRepository.findAllFlights();
         }
 
         try {
@@ -149,7 +147,7 @@ public class FlightsController {
     public ResponseEntity<SingleData> addFlight(@RequestBody SingleData data, @RequestHeader(value="X-Originator-ID") String originatorId) {
         try {
             Flight flight = convert(data.getData());
-            flightsRepository.save(flight);
+            flightRepository.save(flight);
             Update update = new Update("add", convert(flight));
             broadcaster.sendUpdate(update, originatorId);
             return ok(new SingleData(convert(flight)));
@@ -175,10 +173,15 @@ public class FlightsController {
 LOG.info("is admin: {}", request.isUserInRole("admin"));
         try {
             Flight flight = convert(data.getData());
-            flightsRepository.save(flight);
-            Update update = new Update("update", convert(flight));
-            broadcaster.sendUpdate(update, originatorId);
-            return ok(new SingleData(convert(flight)));
+            if (!flight.isLocked()) {
+                flightRepository.save(flight);
+                Update update = new Update("update", convert(flight));
+                broadcaster.sendUpdate(update, originatorId);
+                return ok(new SingleData(convert(flight)));
+            }
+            else {
+                return status(LOCKED).body(null);
+            }
         }
         catch (Exception e) {
             LOG.error("Unable to update flight {}", id, e);
@@ -195,13 +198,13 @@ LOG.info("is admin: {}", request.isUserInRole("admin"));
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(value="/{id}", method = DELETE)
     public ResponseEntity<SingleData> deleteFlight(@PathVariable("id") Long id, @RequestHeader(value="X-Originator-ID") String originatorId) {
-        Flight flight = flightsRepository.findOne(id);
-        if (flight != null) {
-            flightsRepository.delete(id);
-            Update update = new Update("delete", convert(flight));
+        Optional<Flight> flight = flightRepository.findById(id);
+        if (flight.isPresent()) {
+            flightRepository.deleteById(id);
+            Update update = new Update("delete", convert(flight.get()));
             broadcaster.sendUpdate(update, originatorId);
             LOG.debug("flight: {} deleted by originator {}", id, originatorId);
-            return ok(new SingleData(convert(flight)));
+            return ok(new SingleData(convert(flight.get())));
         }
         else {
             return badRequest().body(null);

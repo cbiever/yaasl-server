@@ -1,0 +1,29 @@
+databaseChangeLog:
+- changeSet:
+    id: 200
+    author: yaasl
+    changes:
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 1
+          - column:
+              name: description
+              value: Student
+          - column:
+              name: i18n
+              value: cost.sharing.student
+        tableName: cost_sharing
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 2
+          - column:
+              name: description
+              value: FiftyFifty
+          - column:
+              name: i18n
+              value: cost.sharing.fifty.fifty
+        tableName: cost_sharing

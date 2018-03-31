@@ -1,0 +1,607 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: yaasl
+    changes:
+    - createSequence:
+        sequenceName: hibernate_sequence
+        startValue: 1000
+- changeSet:
+    id: 2
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: id
+            type: BIGINT
+        - column:
+            name: call_sign
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: can_tow
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: needs_towing
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: number_of_seats
+            type: INT
+        tableName: aircraft
+- changeSet:
+    id: 3
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: id
+            type: BIGINT
+        - column:
+            name: authority
+            type: VARCHAR(255)
+        tableName: authority
+- changeSet:
+    id: 4
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: authority_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: users_id
+            type: BIGINT
+        tableName: authority_users
+- changeSet:
+    id: 5
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: id
+            type: BIGINT
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            name: i18n
+            type: VARCHAR(255)
+        tableName: cost_sharing
+- changeSet:
+    id: 6
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: id
+            type: BIGINT
+        - column:
+            name: comment
+            type: VARCHAR(300)
+        - column:
+            constraints:
+              nullable: false
+            name: editable
+            type: BOOLEAN
+        - column:
+            name: landing_time
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: locked
+            type: BOOLEAN
+        - column:
+            name: start_time
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: tow_plane_landing_time
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: aircraft_id
+            type: BIGINT
+        - column:
+            name: cost_sharing_id
+            type: BIGINT
+        - column:
+            name: landing_location_id
+            type: BIGINT
+        - column:
+            name: pilot1_id
+            type: BIGINT
+        - column:
+            name: pilot1_role_id
+            type: BIGINT
+        - column:
+            name: pilot2_id
+            type: BIGINT
+        - column:
+            name: pilot2_role_id
+            type: BIGINT
+        - column:
+            name: start_location_id
+            type: BIGINT
+        - column:
+            name: tow_pilot_id
+            type: BIGINT
+        - column:
+            name: tow_plane_id
+            type: BIGINT
+        tableName: flight
+- changeSet:
+    id: 7
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: id
+            type: BIGINT
+        - column:
+            name: name
+            type: VARCHAR(255)
+        tableName: location
+- changeSet:
+    id: 8
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: can_tow
+            type: BOOLEAN
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: pilot_role_id
+            type: BIGINT
+        tableName: pilot
+- changeSet:
+    id: 9
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: id
+            type: BIGINT
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            name: i18n
+            type: VARCHAR(255)
+        tableName: pilot_role
+- changeSet:
+    id: 10
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: id
+            type: BIGINT
+        - column:
+            name: date
+            type: TIMESTAMP(6) WITHOUT TIME ZONE
+        - column:
+            name: series
+            type: VARCHAR(255)
+        - column:
+            name: token_value
+            type: VARCHAR(255)
+        - column:
+            name: username
+            type: VARCHAR(255)
+        - column:
+            name: user_id
+            type: BIGINT
+        tableName: remember_me_token
+- changeSet:
+    id: 11
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: authority_id
+            type: BIGINT
+        tableName: user_authority
+- changeSet:
+    id: 12
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: md5
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: account_non_expired
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: account_non_locked
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: credentials_non_expired
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: enabled
+            type: BOOLEAN
+        - column:
+            name: password
+            type: VARCHAR(255)
+        - column:
+            name: username
+            type: VARCHAR(255)
+        tableName: yaasl_user
+- changeSet:
+    id: 13
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: aircraft_pkey
+        tableName: aircraft
+- changeSet:
+    id: 14
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: authority_pkey
+        tableName: authority
+- changeSet:
+    id: 15
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: authority_id, users_id
+        constraintName: authority_users_pkey
+        tableName: authority_users
+- changeSet:
+    id: 16
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: cost_sharing_pkey
+        tableName: cost_sharing
+- changeSet:
+    id: 17
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: flight_pkey
+        tableName: flight
+- changeSet:
+    id: 18
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: location_pkey
+        tableName: location
+- changeSet:
+    id: 19
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: pilot_pkey
+        tableName: pilot
+- changeSet:
+    id: 20
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: pilot_role_pkey
+        tableName: pilot_role
+- changeSet:
+    id: 21
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: remember_me_token_pkey
+        tableName: remember_me_token
+- changeSet:
+    id: 22
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: user_id, authority_id
+        constraintName: user_authority_pkey
+        tableName: user_authority
+- changeSet:
+    id: 23
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: id
+        constraintName: yaasl_user_pkey
+        tableName: yaasl_user
+- changeSet:
+    id: 24
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: pilot2_role_id
+        baseTableName: flight
+        constraintName: fk_pilot2_role
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: pilot_role
+- changeSet:
+    id: 25
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: start_location_id
+        baseTableName: flight
+        constraintName: fk_start_location
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: location
+- changeSet:
+    id: 26
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: remember_me_token
+        constraintName: fk_remember_me
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: yaasl_user
+- changeSet:
+    id: 27
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: tow_plane_id
+        baseTableName: flight
+        constraintName: fk_tow_plane
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: aircraft
+- changeSet:
+    id: 28
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: users_id
+        baseTableName: authority_users
+        constraintName: fk_users
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: yaasl_user
+- changeSet:
+    id: 29
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: pilot2_id
+        baseTableName: flight
+        constraintName: fk_pilot2
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: pilot
+- changeSet:
+    id: 30
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: authority_id
+        baseTableName: authority_users
+        constraintName: fk_authority_1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: authority
+- changeSet:
+    id: 31
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: pilot1_id
+        baseTableName: flight
+        constraintName: fk_pilot1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: pilot
+- changeSet:
+    id: 32
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: landing_location_id
+        baseTableName: flight
+        constraintName: fk_landing_location
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: location
+- changeSet:
+    id: 33
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: pilot_role_id
+        baseTableName: pilot
+        constraintName: fk_pilot_role
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: pilot_role
+- changeSet:
+    id: 34
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: authority_id
+        baseTableName: user_authority
+        constraintName: fk_authority_2
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: authority
+- changeSet:
+    id: 35
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: cost_sharing_id
+        baseTableName: flight
+        constraintName: fk_cost_sharing
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: cost_sharing
+- changeSet:
+    id: 36
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: user_authority
+        constraintName: fk_user
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: yaasl_user
+- changeSet:
+    id: 37
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: aircraft_id
+        baseTableName: flight
+        constraintName: fk_aircraft
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: aircraft
+- changeSet:
+    id: 38
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: pilot1_role_id
+        baseTableName: flight
+        constraintName: fk_pilot1_role
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: pilot_role
+- changeSet:
+    id: 39
+    author: yaasl
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: tow_pilot_id
+        baseTableName: flight
+        constraintName: fk_tow_pilot
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: pilot

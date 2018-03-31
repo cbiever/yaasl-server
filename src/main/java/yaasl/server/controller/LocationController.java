@@ -62,7 +62,8 @@ public class LocationController {
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(value="/{id}", method = GET, produces = "application/vnd.api+json")
     public SingleData getLocation(@PathVariable("id") Long id) {
-        return new SingleData(convert(locationRepository.findOne(id)));
+        Optional<Location> location = locationRepository.findById(id);
+        return location.isPresent() ? new SingleData(convert(location.get())) : null;
     }
 
  }

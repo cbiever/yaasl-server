@@ -23,6 +23,7 @@ public class Flight {
     private Date towPlaneLandingTime;
     private CostSharing costSharing;
     private String comment;
+    private boolean editable;
     private boolean locked;
 
     public Flight() {
@@ -169,6 +170,14 @@ public class Flight {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 
     public boolean isLocked() {

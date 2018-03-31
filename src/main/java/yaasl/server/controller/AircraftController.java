@@ -44,9 +44,9 @@ public class AircraftController {
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(value="/{id}", method = GET, produces = "application/vnd.api+json")
     public ResponseEntity<Element> getSingleAircraft(@PathVariable("id") Long id) {
-        Aircraft aircraft = aircraftRepository.findOne(id);
-        if (aircraft != null) {
-            return ok(convert(aircraft));
+        Optional<Aircraft> aircraft = aircraftRepository.findById(id);
+        if (aircraft.isPresent()) {
+            return ok(convert(aircraft.get()));
         }
         else {
             return badRequest().body(null);

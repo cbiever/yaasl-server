@@ -1,4 +1,4 @@
-package yaasl.server.security;
+package yaasl.server.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,13 +11,14 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import yaasl.server.persistence.UserRepository;
+import yaasl.server.security.*;
 
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static yaasl.server.security.SecurityConstants.SIGN_UP_URL;
 
 @EnableWebSecurity
-@Profile("prod")
+@Profile("demo")
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -39,8 +40,14 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .csrf()
                 .disable()
 
+                .headers().frameOptions().sameOrigin()
+
+                .and()
+
                 .authorizeRequests()
                 .antMatchers(POST, SIGN_UP_URL)
+                .permitAll()
+                .antMatchers("/h2-console/**", "/swagger-ui.html/**", "/swagger-resources/**", "/v2/api-docs/**", "/webjars/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

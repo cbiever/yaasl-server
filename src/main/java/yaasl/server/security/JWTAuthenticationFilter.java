@@ -8,20 +8,16 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
-import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import yaasl.server.model.User;
 import yaasl.server.persistence.UserRepository;
 
 import javax.servlet.FilterChain;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
-import java.util.Optional;
 
 import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 import static java.lang.Boolean.parseBoolean;
-import static java.util.Arrays.stream;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static yaasl.server.security.SecurityConstants.*;
 
@@ -61,8 +57,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                         rememberMeServices.loginSuccess(request, response, authentication);
                     }
                     else {
-                        rememberMeServices.
-                                logout(request, response, authentication);
+                        rememberMeServices.logout(request, response, authentication);
                     }
                 }
             }

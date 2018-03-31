@@ -1,0 +1,13 @@
+databaseChangeLog:
+- include:
+     file: classpath:db/changelog/db.changelog-master.yaml
+- include:
+     file: classpath:db/changelog/demo/db.changelog-demo-aircraft.yaml
+- include:
+     file: classpath:db/changelog/demo/db.changelog-demo-cost-sharing.yaml
+- include:
+     file: classpath:db/changelog/demo/db.changelog-demo-locations.yaml
+- include:
+     file: classpath:db/changelog/demo/db.changelog-demo-pilots.yaml
+- include:
+     file: classpath:db/changelog/demo/db.changelog-demo-users.yaml

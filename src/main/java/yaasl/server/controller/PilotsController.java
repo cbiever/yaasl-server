@@ -14,13 +14,12 @@ import yaasl.server.jsonapi.Element;
 import yaasl.server.jsonapi.MultiData;
 import yaasl.server.model.Pilot;
 import yaasl.server.persistence.PilotRoleRepository;
-import yaasl.server.persistence.PilotsRepository;
+import yaasl.server.persistence.PilotRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.status;
@@ -34,7 +33,7 @@ public class PilotsController {
     private Logger LOG = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private PilotsRepository pilotsRepository;
+    private PilotRepository pilotRepository;
 
     @Autowired
     private PilotRoleRepository pilotRoleRepository;
@@ -49,7 +48,7 @@ public class PilotsController {
     @RequestMapping(method = GET, produces = "application/vnd.api+json")
     public MultiData getPilots() {
         List<Element> pilots = new ArrayList<Element>();
-        pilotsRepository
+        pilotRepository
                 .findAll()
                 .forEach(pilot -> pilots.add(convert(pilot)));
         return new MultiData(pilots);
@@ -64,9 +63,9 @@ public class PilotsController {
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(value="/{id}", method = GET, produces = "application/vnd.api+json")
     public ResponseEntity<Element> getPilot(@PathVariable("id") Long id) {
-        Pilot pilot = pilotsRepository.findOne(id);
-        if (pilot != null) {
-            return ok(convert(pilot));
+        Optional<Pilot> pilot = pilotRepository.findById(id);
+        if (pilot.isPresent()) {
+            return ok(convert(pilot.get()));
         }
         else {
             return badRequest().body(null);

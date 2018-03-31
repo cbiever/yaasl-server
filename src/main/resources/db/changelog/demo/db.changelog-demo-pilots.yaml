@@ -1,0 +1,327 @@
+databaseChangeLog:
+- changeSet:
+    id: 400
+    author: yaasl
+    changes:
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 1
+          - column:
+              name: description
+              value: Flight instructor
+          - column:
+              name: i18n
+              value: pilot.role.fi
+        tableName: pilot_role
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 2
+          - column:
+              name: description
+              value: Pilot
+          - column:
+              name: i18n
+              value: pilot.role.pilot
+        tableName: pilot_role
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 3
+          - column:
+              name: description
+              value: Student
+          - column:
+              name: i18n
+              value: pilot.role.student
+        tableName: pilot_role
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 4
+          - column:
+              name: description
+              value: Passenger
+          - column:
+              name: i18n
+              value: pilot.role.passenger
+        tableName: pilot_role
+- changeSet:
+    id: 301
+    author: yaasl
+    changes:
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 1
+          - column:
+              name: name
+              value: Han Solo
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 1
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 2
+          - column:
+              name: name
+              value: Chewbacca
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 3
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 3
+          - column:
+              name: name
+              value: Luke Skywalker
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 2
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 4
+          - column:
+              name: name
+              value: Jabba the Hutt
+          - column:
+              name: can_tow
+              value: true
+          - column:
+              name: pilot_role_id
+              value: 2
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 5
+          - column:
+              name: name
+              value: Black Mamba
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 1
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 6
+          - column:
+              name: name
+              value: Bill
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 1
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 7
+          - column:
+              name: name
+              value: Hattori Hanzo
+          - column:
+              name: can_tow
+              value: true
+          - column:
+              name: pilot_role_id
+              value: 1
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 8
+          - column:
+              name: name
+              value: O-Ren Ishii
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 3
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 9
+          - column:
+              name: name
+              value: Gogo Yubari
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 4
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 10
+          - column:
+              name: name
+              value: Keyser Soze
+          - column:
+              name: can_tow
+              value: true
+          - column:
+              name: pilot_role_id
+              value: 1
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 11
+          - column:
+              name: name
+              value: McManus
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 3
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 12
+          - column:
+              name: name
+              value: Dean Keaton
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 3
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 13
+          - column:
+              name: name
+              value: Fred Fenster
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 2
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 14
+          - column:
+              name: name
+              value: Todd Hockney
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 2
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 15
+          - column:
+              name: name
+              value: Verbal Kint
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 1
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 16
+          - column:
+              name: name
+              value: Dave Kujan
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 4
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 17
+          - column:
+              name: name
+              value: Edie Finneran
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: pilot_role_id
+              value: 3
+        tableName: pilot
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 18
+          - column:
+              name: name
+              value: Mr. Kobayashi
+          - column:
+              name: can_tow
+              value: true
+          - column:
+              name: pilot_role_id
+              value: 4
+        tableName: pilot
