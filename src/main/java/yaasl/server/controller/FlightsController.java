@@ -117,10 +117,8 @@ public class FlightsController {
             HttpHeaders headers = new HttpHeaders();
             byte[] data = null;
             if (!format.isPresent() || "application/vnd.api+json".equals(format.get())) {
-                List<Element> elements = new ArrayList<Element>();
-                flights.forEach(flight -> elements.add(convert(flight)));
                 headers.add("Content-Type", "application/vnd.api+json");
-                data = objectMapper.writeValueAsBytes(new MultiData(elements));
+                data = objectMapper.writeValueAsBytes(new MultiData(flights.stream().map(flight -> convert(flight)).collect(toList())));
             } else if (format.isPresent() && "csv".equals(format.get())) {
                 headers.add("Content-Type", "text/csv");
                 data = csvExporter.generate(flights);

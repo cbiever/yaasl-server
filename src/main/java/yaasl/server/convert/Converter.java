@@ -152,29 +152,51 @@ public class Converter {
         return element;
     }
 
-    public static Flight convert(Element element) throws Exception {
-        Map<String, Object> attributes = element.getAttributes();
-        Flight flight = new Flight();
-        if (element.getId() != null) {
-            flight.setId(parseLong(element.getId()));
+    public static Element convert(Feedback feedback) {
+        Element element = new Element();
+        element.setId(feedback.getId().toString());
+        element.setType("feedback");
+        if (feedback.getFeedback() != null) {
+            element.addAttribute("feedback", feedback.getFeedback());
         }
-        flight.setStartLocation(convertLocation(getRelationship("start-location", element)));
-        flight.setStartTime(parseDateTime((String) attributes.get("start-time")));
-        flight.setLandingLocation(convertLocation(getRelationship("landing-location", element)));
-        flight.setLandingTime(parseDateTime(((String) attributes.get("landing-time"))));
-        flight.setAircraft(convertAircraft(getRelationship("aircraft", element)));
-        flight.setPilot1(convertPilot(getRelationship("pilot1", element)));
-        flight.setPilot1Role(convertPilotRole(getRelationship("pilot1-role", element)));
-        flight.setPilot2(convertPilot(getRelationship("pilot2", element)));
-        flight.setPilot2Role(convertPilotRole(getRelationship("pilot2-role", element)));
-        flight.setTowPlane(convertAircraft(getRelationship("tow-plane", element)));
-        flight.setTowPilot(convertPilot(getRelationship("tow-pilot", element)));
-        flight.setTowPlaneLandingTime(parseDateTime(((String) attributes.get("tow-plane-landing-time"))));
-        flight.setCostSharing(convertCostSharing(getRelationship("cost-sharing", element)));
-        flight.setComment((String) attributes.get("comment"));
-        flight.setEditable(getAttribute("editable", false, attributes));
-        flight.setLocked(getAttribute("locked", true, attributes));
-        return flight;
+        if (feedback.getComment() != null) {
+            element.addAttribute("comment", feedback.getComment());
+        }
+        return element;
+    }
+
+    public static <T> T convert(Element element) throws Exception {
+        Map<String, Object> attributes = element.getAttributes();
+        switch (element.getType()) {
+            case "flights":
+                Flight flight = new Flight();
+                if (element.getId() != null) {
+                    flight.setId(parseLong(element.getId()));
+                }
+                flight.setStartLocation(convertLocation(getRelationship("start-location", element)));
+                flight.setStartTime(parseDateTime((String) attributes.get("start-time")));
+                flight.setLandingLocation(convertLocation(getRelationship("landing-location", element)));
+                flight.setLandingTime(parseDateTime(((String) attributes.get("landing-time"))));
+                flight.setAircraft(convertAircraft(getRelationship("aircraft", element)));
+                flight.setPilot1(convertPilot(getRelationship("pilot1", element)));
+                flight.setPilot1Role(convertPilotRole(getRelationship("pilot1-role", element)));
+                flight.setPilot2(convertPilot(getRelationship("pilot2", element)));
+                flight.setPilot2Role(convertPilotRole(getRelationship("pilot2-role", element)));
+                flight.setTowPlane(convertAircraft(getRelationship("tow-plane", element)));
+                flight.setTowPilot(convertPilot(getRelationship("tow-pilot", element)));
+                flight.setTowPlaneLandingTime(parseDateTime(((String) attributes.get("tow-plane-landing-time"))));
+                flight.setCostSharing(convertCostSharing(getRelationship("cost-sharing", element)));
+                flight.setComment((String) attributes.get("comment"));
+                flight.setEditable(getAttribute("editable", false, attributes));
+                flight.setLocked(getAttribute("locked", true, attributes));
+                return (T) flight;
+            case "feedbacks":
+                Feedback feedback = new Feedback();
+                feedback.setFeedback(getAttribute("feedback", null, attributes));
+                feedback.setComment(getAttribute("comment", null, attributes));
+                return (T) feedback;
+        }
+        return null;
     }
 
     public static Date parseDate(String date) {
