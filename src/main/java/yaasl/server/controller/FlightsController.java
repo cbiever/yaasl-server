@@ -31,6 +31,7 @@ import java.util.*;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.time.DateUtils.addDays;
+import static org.apache.commons.lang3.time.DateUtils.addSeconds;
 import static org.apache.commons.lang3.time.DateUtils.truncate;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.badRequest;
@@ -168,10 +169,9 @@ public class FlightsController {
                                                    @RequestBody SingleData data,
                                                    @RequestHeader(value="X-Originator-ID") String originatorId,
                                                    HttpServletRequest request) {
-LOG.info("is admin: {}", request.isUserInRole("admin"));
         try {
             Flight flight = convert(data.getData());
-            if (!flight.isLocked()) {
+            if (!flight.isLocked() || request.isUserInRole("admin")) {
                 flightRepository.save(flight);
                 Update update = new Update("update", convert(flight));
                 broadcaster.sendUpdate(update, originatorId);
@@ -240,7 +240,7 @@ LOG.info("is admin: {}", request.isUserInRole("admin"));
         }
         if (date.isPresent()) {
             Date dateBegin = parseDate(date.get());
-            Date dateEnd = addDays(dateBegin, 1);
+            Date dateEnd = addSeconds(addDays(dateBegin, 1), -1);
             url += "&dbeg=" + formatDate(dateBegin) + "&dend=" + formatDate(dateEnd);
         }
         RestTemplate restTemplate = new RestTemplate();
