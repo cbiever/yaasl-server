@@ -149,6 +149,7 @@ public class Converter {
         }
         element.addAttribute("editable", flight.isEditable());
         element.addAttribute("locked", flight.isLocked());
+        element.addAttribute("revision", flight.getRevision());
         return element;
     }
 
@@ -189,6 +190,7 @@ public class Converter {
                 flight.setComment((String) attributes.get("comment"));
                 flight.setEditable(getAttribute("editable", false, attributes));
                 flight.setLocked(getAttribute("locked", true, attributes));
+                flight.setRevision(getAttribute("revision", 0, attributes));
                 return (T) flight;
             case "feedbacks":
                 Feedback feedback = new Feedback();

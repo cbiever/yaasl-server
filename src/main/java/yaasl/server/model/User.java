@@ -5,7 +5,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toSet;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.AUTO;
 
@@ -113,18 +115,12 @@ public class User implements UserDetails {
     @ManyToMany(targetEntity = Authority.class)
     @JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
     public Set<Authority> getAuthorities2() {
-        Set<Authority> authorities = new HashSet<Authority>();
-        for (GrantedAuthority grantedAuthority : grantedAuthorities) {
-            authorities.add((Authority) grantedAuthority);
-        }
-        return authorities;
+        return grantedAuthorities.stream().map(grantedAuthority -> (Authority) grantedAuthority).collect(toSet());
     }
 
     public void setAuthorities2(Set<Authority> authorities) {
         grantedAuthorities.clear();
-        for (Authority authority : authorities) {
-            grantedAuthorities.add(authority);
-        }
+        grantedAuthorities.addAll(authorities);
     }
 
     public boolean isMD5() {

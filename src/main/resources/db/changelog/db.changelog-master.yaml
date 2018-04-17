@@ -98,21 +98,8 @@ databaseChangeLog:
             name: id
             type: BIGINT
         - column:
-            name: comment
-            type: VARCHAR(300)
-        - column:
-            constraints:
-              nullable: false
-            name: editable
-            type: BOOLEAN
-        - column:
             name: landing_time
             type: TIMESTAMP(6) WITHOUT TIME ZONE
-        - column:
-            constraints:
-              nullable: false
-            name: locked
-            type: BOOLEAN
         - column:
             name: start_time
             type: TIMESTAMP(6) WITHOUT TIME ZONE
@@ -148,6 +135,24 @@ databaseChangeLog:
             type: BIGINT
         - column:
             name: tow_plane_id
+            type: BIGINT
+        - column:
+            name: comment
+            type: VARCHAR(300)
+        - column:
+            constraints:
+              nullable: false
+            name: editable
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: locked
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: revision
             type: BIGINT
         tableName: flight
 - changeSet:

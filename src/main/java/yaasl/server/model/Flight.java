@@ -25,6 +25,7 @@ public class Flight {
     private String comment;
     private boolean editable;
     private boolean locked;
+    private long revision;
 
     public Flight() {
     }
@@ -188,4 +189,12 @@ public class Flight {
         this.locked = locked;
     }
 
+    public long getRevision() {
+        return revision;
+    }
+
+    public void setRevision(long revision) {
+        this.revision = revision;
+    }
+    
 }

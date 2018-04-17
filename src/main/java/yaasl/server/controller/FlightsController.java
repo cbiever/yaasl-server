@@ -170,15 +170,32 @@ public class FlightsController {
                                                    @RequestHeader(value="X-Originator-ID") String originatorId,
                                                    HttpServletRequest request) {
         try {
-            Flight flight = convert(data.getData());
-            if (!flight.isLocked() || request.isUserInRole("admin")) {
-                flightRepository.save(flight);
-                Update update = new Update("update", convert(flight));
-                broadcaster.sendUpdate(update, originatorId);
-                return ok(new SingleData(convert(flight)));
+            Flight incomingFlight = convert(data.getData());
+            Flight flight = findFlight(incomingFlight.getId());
+            if (flight != null) {
+                if (!flight.isLocked() || request.isUserInRole("admin")) {
+                    if (flight.getRevision() == incomingFlight.getRevision()) {
+                        if (incomingFlight.isLocked()) {
+                            incomingFlight.setEditable(false);
+                        }
+                        incomingFlight.setRevision(incomingFlight.getRevision() + 1);
+                        flightRepository.save(incomingFlight);
+                        Update update = new Update("update", convert(incomingFlight));
+                        broadcaster.sendUpdate(update, originatorId);
+                        return ok(new SingleData(convert(incomingFlight)));
+                    }
+                    else {
+                        LOG.error("Update of flight rejected (user: {} revision: {} {})", request.getUserPrincipal().getName(), incomingFlight.getRevision(), flight.getRevision());
+                        flight.setRevision(-flight.getRevision());
+                        return ok(new SingleData(convert(flight)));
+                    }
+                }
+                else {
+                    return status(LOCKED).body(null);
+                }
             }
             else {
-                return status(LOCKED).body(null);
+                return status(NOT_FOUND).body(null);
             }
         }
         catch (Exception e) {
@@ -246,6 +263,11 @@ public class FlightsController {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         return ok(response.getBody());
+    }
+
+    private Flight findFlight(long id) {
+        Optional<Flight> flight = flightRepository.findById(id);
+        return flight.isPresent() ? flight.get() : null;
     }
 
  }
