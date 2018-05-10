@@ -24,6 +24,7 @@ import yaasl.server.model.Update;
 import yaasl.server.persistence.CostSharingRepository;
 import yaasl.server.persistence.FlightRepository;
 import yaasl.server.persistence.LocationRepository;
+import yaasl.server.providers.Ktrax;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -64,8 +65,8 @@ public class FlightsController {
     @Autowired
     private Broadcaster broadcaster;
 
-    @Value("${provider.ktrax.url}")
-    private String ktrax;
+    @Autowired
+    private Ktrax ktrax;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -250,19 +251,8 @@ public class FlightsController {
             @ApiResponse(code = 404, message = "Not Found"),
             @ApiResponse(code = 500, message = "Failure")})
     @RequestMapping(value="/ktrax", method = GET, produces = "application/json")
-    public ResponseEntity<String> getKtraxLogbook(@RequestParam("location") Optional<String> location, @RequestParam("date") Optional<String> date) {
-        String url = ktrax + "?db=sortie&query_type=ap";
-        if (location.isPresent()) {
-            url += "&id=" + location.get().toUpperCase();
-        }
-        if (date.isPresent()) {
-            Date dateBegin = parseDate(date.get());
-            Date dateEnd = addSeconds(addDays(dateBegin, 1), -1);
-            url += "&dbeg=" + formatDate(dateBegin) + "&dend=" + formatDate(dateEnd);
-        }
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        return ok(response.getBody());
+    public ResponseEntity<List<Flight>> getKtraxLogbook(@RequestParam("location") Optional<String> location, @RequestParam("date") Optional<String> date) {
+        return ok(ktrax.getFlights(location.isPresent() ? location.get() : null, date.isPresent() ? date.get() : null));
     }
 
     private Flight findFlight(long id) {

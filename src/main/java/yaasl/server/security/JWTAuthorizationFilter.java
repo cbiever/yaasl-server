@@ -3,6 +3,7 @@ package yaasl.server.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static yaasl.server.security.SecurityConstants.*;
 
@@ -28,9 +30,11 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private Logger LOG = LoggerFactory.getLogger(getClass());
     private Pattern jwtPattern = Pattern.compile("[\\w-]+\\.[\\w-]+\\.[\\w-]+");
+    private String jwtSecret;
 
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
+    public JWTAuthorizationFilter(String jwtSecret, AuthenticationManager authenticationManager) {
         super(authenticationManager);
+        this.jwtSecret = jwtSecret;
     }
 
     @Override
@@ -62,28 +66,33 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UsernamePasswordAuthenticationToken getAuthentication(String token) {
         UsernamePasswordAuthenticationToken authenticationToken = null;
-        if (token != null) {
-            Claims claims = null;
-            try {
-                claims = Jwts.parser()
-                        .setSigningKey(SECRET.getBytes())
-                        .parseClaimsJws(token)
-                        .getBody();
-            }
-            catch (ExpiredJwtException e) {
-                LOG.error("Token expired");
-            }
-            if (claims != null) {
-                String user = claims.getSubject();
-                if (user != null) {
-                    List<GrantedAuthority> grantedAuthorities = null;
-                    List<String> roles = (List<String>) claims.get("roles");
-                    if (roles != null) {
-                        grantedAuthorities = roles.stream().map(role -> new Authority(role)).collect(toList());
+        try {
+            if (token != null) {
+                Claims claims = null;
+                try {
+                    claims = Jwts.parser()
+                            .setSigningKey(jwtSecret.getBytes())
+                            .parseClaimsJws(token)
+                            .getBody();
+                }
+                catch (ExpiredJwtException e) {
+                    LOG.error("Token expired");
+                }
+                if (claims != null) {
+                    String user = claims.getSubject();
+                    if (user != null) {
+                        List<GrantedAuthority> grantedAuthorities = null;
+                        List<String> roles = (List<String>) claims.get("roles");
+                        if (roles != null) {
+                            grantedAuthorities = roles.stream().map(role -> new Authority(role)).collect(toList());
+                        }
+                        authenticationToken = new UsernamePasswordAuthenticationToken(user, null, grantedAuthorities);
                     }
-                    authenticationToken = new UsernamePasswordAuthenticationToken(user, null, grantedAuthorities);
                 }
             }
+        }
+        catch (SignatureException se) {
+            LOG.error("Invalid JWT token");
         }
         return authenticationToken;
     }

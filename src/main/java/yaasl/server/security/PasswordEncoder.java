@@ -12,7 +12,7 @@ import static org.apache.commons.codec.binary.Hex.encodeHexString;
 public class PasswordEncoder implements org.springframework.security.crypto.password.PasswordEncoder {
 
     private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-    private MessageDigest md5Digest = null;
+    private MessageDigest md5Digest;
 
     public PasswordEncoder() throws Exception {
         this.md5Digest = MessageDigest.getInstance("md5");

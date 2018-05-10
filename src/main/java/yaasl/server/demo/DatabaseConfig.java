@@ -3,13 +3,8 @@ package yaasl.server.demo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import yaasl.server.model.Aircraft;
-import yaasl.server.model.Flight;
-import yaasl.server.model.Pilot;
-import yaasl.server.persistence.AircraftRepository;
-import yaasl.server.persistence.FlightRepository;
-import yaasl.server.persistence.LocationRepository;
-import yaasl.server.persistence.PilotRepository;
+import yaasl.server.model.*;
+import yaasl.server.persistence.*;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
@@ -33,6 +28,15 @@ public class DatabaseConfig {
 
     @Autowired
     private FlightRepository flightRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AuthorityRepository authorityRepository;
+
+    @Autowired
+    private TemporaryAuthorityRepository temporaryAuthorityRepository;
 
     @PostConstruct
     public void initDatabase() {
@@ -108,6 +112,11 @@ public class DatabaseConfig {
         flight.setEditable(true);
         flight.setLocked(false);
         flightRepository.save(flight);
+
+        User fdl = userRepository.findByUsername("fdl");
+        Authority authority = authorityRepository.findByName("fdl");
+        TemporaryAuthority temporaryFdlAuthority = new TemporaryAuthority(now, fdl, authority);
+        temporaryAuthorityRepository.save(temporaryFdlAuthority);
     }
 
     private Aircraft getAircraft(long id) {

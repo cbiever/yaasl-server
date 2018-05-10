@@ -1,13 +1,10 @@
 package yaasl.server.persistence;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import yaasl.server.model.Flight;
 import yaasl.server.model.Location;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 

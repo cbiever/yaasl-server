@@ -84,6 +84,36 @@ databaseChangeLog:
     - insert:
         columns:
           - column:
+              name: id
+              value: 3
+          - column:
+              name: md5
+              value: false
+          - column:
+              name: account_non_expired
+              value: true
+          - column:
+              name: account_non_locked
+              value: true
+          - column:
+              name: credentials_non_expired
+              value: true
+          - column:
+              name: enabled
+              value: true
+          - column:
+              name: credentials_non_expired
+              value: true
+          - column:
+              name: password
+              value: $2a$10$./HD707NrYVcd3H/bx0g5.sv29cX2uzZqjKnwdKA3lQsRfdJImsuu
+          - column:
+              name: username
+              value: fdl
+        tableName: yaasl_user
+    - insert:
+        columns:
+          - column:
               name: authority_id
               value: 1
           - column:
@@ -99,15 +129,6 @@ databaseChangeLog:
               name: users_id
               value: 1
         tableName: authority_users
-    - insert:
-        columns:
-          - column:
-              name: user_id
-              value: 1
-          - column:
-              name: authority_id
-              value: 2
-        tableName: user_authority
     - insert:
         columns:
           - column:

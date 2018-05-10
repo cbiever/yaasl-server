@@ -1,8 +1,12 @@
 package yaasl.server.model;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import static javax.persistence.EnumType.ORDINAL;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
 import static javax.persistence.GenerationType.AUTO;
 
 @Entity
@@ -10,22 +14,18 @@ public class Aircraft {
 
     private Long id;
     private String callSign;
+    private String competitionNumber;
     private boolean canTow;
     private boolean needsTowing;
     private int numberOfSeats;
+    private String identifier;
+    private String towIdentifier;
 
     public Aircraft() {
     }
 
-    public Aircraft(String callSign, boolean needsTowing, boolean canTow, int numberOfSeats) {
-        this.callSign = callSign;
-        this.needsTowing = needsTowing;
-        this.canTow = canTow;
-        this.numberOfSeats = numberOfSeats;
-    }
-
     @Id
-    @GeneratedValue(strategy=AUTO)
+    @GeneratedValue(strategy = AUTO)
     public Long getId() {
         return id;
     }
@@ -40,6 +40,15 @@ public class Aircraft {
 
     public void setCallSign(String callSign) {
         this.callSign = callSign;
+    }
+
+    @Transient
+    public String getCompetitionNumber() {
+        return competitionNumber;
+    }
+
+    public void setCompetitionNumber(String competitionNumber) {
+        this.competitionNumber = competitionNumber;
     }
 
     public boolean isCanTow() {
@@ -64,6 +73,26 @@ public class Aircraft {
 
     public void setNumberOfSeats(int numberOfSeats) {
         this.numberOfSeats = numberOfSeats;
+    }
+
+    @Transient
+    @JsonIgnore
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    @Transient
+    @JsonIgnore
+    public String getTowIdentifier() {
+        return towIdentifier;
+    }
+
+    public void setTowIdentifier(String towIdentifier) {
+        this.towIdentifier = towIdentifier;
     }
 
 }

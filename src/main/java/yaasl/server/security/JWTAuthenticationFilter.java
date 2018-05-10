@@ -8,16 +8,22 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import yaasl.server.model.Authority;
+import yaasl.server.model.TemporaryAuthority;
 import yaasl.server.model.User;
+import yaasl.server.persistence.TemporaryAuthorityRepository;
 import yaasl.server.persistence.UserRepository;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 import static java.lang.Boolean.parseBoolean;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static yaasl.server.security.SecurityConstants.*;
 
@@ -25,12 +31,21 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private AuthenticationManager authenticationManager;
     private UserRepository userRepository;
+    private TemporaryAuthorityRepository temporaryAuthorityRepository;
     private PasswordEncoder passwordEncoder;
     private PersistentTokenBasedRememberMeServices rememberMeServices;
+    private String jwtSecret;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, PersistentTokenBasedRememberMeServices rememberMeServices) {
+    public JWTAuthenticationFilter(String jwtSecret, AuthenticationManager authenticationManager,
+                                   UserRepository userRepository,
+                                   TemporaryAuthorityRepository temporaryAuthorityRepository,
+                                   PasswordEncoder passwordEncoder,
+                                   PersistentTokenBasedRememberMeServices rememberMeServices) {
+        super();
+        this.jwtSecret = jwtSecret;
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.temporaryAuthorityRepository = temporaryAuthorityRepository;
         this.passwordEncoder = passwordEncoder;
         this.rememberMeServices = rememberMeServices;
     }
@@ -67,16 +82,18 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
-        String[] roles = authentication
+        List<String> roles = authentication
                 .getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
-                .toArray(String[]::new);
+                .collect(toList());
+        List<Authority> temporaryAuthorities = temporaryAuthorityRepository.findByUserAndDate((User) authentication.getPrincipal(), new Date());
+        roles.addAll(temporaryAuthorities.stream().map(authority -> authority.getAuthority()).collect(toList()));
         String token = Jwts.builder()
                 .setSubject(((User) authentication.getPrincipal()).getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .claim("roles", roles)
-                .signWith(HS512, SECRET.getBytes())
+                .claim("roles", roles.toArray())
+                .signWith(HS512, jwtSecret.getBytes())
                 .compact();
         response.addHeader(TOKEN_HEADER, TOKEN_PREFIX + token);
     }

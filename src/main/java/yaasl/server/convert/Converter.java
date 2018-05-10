@@ -46,6 +46,7 @@ public class Converter {
         element.setType("aircraft");
         if (includeAttributes) {
             element.addAttribute("call-sign", aircraft.getCallSign());
+            element.addAttribute("competition-number", aircraft.getCompetitionNumber());
             element.addAttribute("can-tow", aircraft.isCanTow());
             element.addAttribute("needs-towing", aircraft.isNeedsTowing());
             element.addAttribute("number-of-seats", aircraft.getNumberOfSeats());

@@ -80,6 +80,33 @@ databaseChangeLog:
             name: id
             type: BIGINT
         - column:
+            constraints:
+              nullable: false
+            name: date
+            type: DATE
+        - column:
+            constraints:
+              nullable: false
+            name: authority_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: BIGINT
+        tableName: temporary_authority
+- changeSet:
+    id: 6
+    author: yaasl
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: id
+            type: BIGINT
+        - column:
             name: description
             type: VARCHAR(255)
         - column:
@@ -87,7 +114,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: cost_sharing
 - changeSet:
-    id: 6
+    id: 7
     author: yaasl
     changes:
     - createTable:
@@ -156,7 +183,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: flight
 - changeSet:
-    id: 7
+    id: 8
     author: yaasl
     changes:
     - createTable:
@@ -171,7 +198,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: location
 - changeSet:
-    id: 8
+    id: 9
     author: yaasl
     changes:
     - createTable:
@@ -194,7 +221,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: pilot
 - changeSet:
-    id: 9
+    id: 10
     author: yaasl
     changes:
     - createTable:
@@ -212,7 +239,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: pilot_role
 - changeSet:
-    id: 10
+    id: 11
     author: yaasl
     changes:
     - createTable:
@@ -239,7 +266,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: remember_me_token
 - changeSet:
-    id: 11
+    id: 12
     author: yaasl
     changes:
     - createTable:
@@ -256,7 +283,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: user_authority
 - changeSet:
-    id: 12
+    id: 13
     author: yaasl
     changes:
     - createTable:
@@ -299,7 +326,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: yaasl_user
 - changeSet:
-    id: 13
+    id: 14
     author: yaasl
     changes:
     - createTable:
@@ -346,10 +373,18 @@ databaseChangeLog:
     changes:
     - addPrimaryKey:
         columnNames: id
+        constraintName: temporary_authority_pkey
+        tableName: temporary_authority
+- changeSet:
+    id: 54
+    author: yaasl
+    changes:
+    - addPrimaryKey:
+        columnNames: id
         constraintName: cost_sharing_pkey
         tableName: cost_sharing
 - changeSet:
-    id: 54
+    id: 55
     author: yaasl
     changes:
     - addPrimaryKey:
@@ -357,7 +392,7 @@ databaseChangeLog:
         constraintName: flight_pkey
         tableName: flight
 - changeSet:
-    id: 55
+    id: 56
     author: yaasl
     changes:
     - addPrimaryKey:
@@ -365,7 +400,7 @@ databaseChangeLog:
         constraintName: location_pkey
         tableName: location
 - changeSet:
-    id: 56
+    id: 57
     author: yaasl
     changes:
     - addPrimaryKey:
@@ -373,7 +408,7 @@ databaseChangeLog:
         constraintName: pilot_pkey
         tableName: pilot
 - changeSet:
-    id: 57
+    id: 58
     author: yaasl
     changes:
     - addPrimaryKey:
@@ -381,7 +416,7 @@ databaseChangeLog:
         constraintName: pilot_role_pkey
         tableName: pilot_role
 - changeSet:
-    id: 58
+    id: 59
     author: yaasl
     changes:
     - addPrimaryKey:
@@ -389,7 +424,7 @@ databaseChangeLog:
         constraintName: remember_me_token_pkey
         tableName: remember_me_token
 - changeSet:
-    id: 59
+    id: 60
     author: yaasl
     changes:
     - addPrimaryKey:
@@ -397,7 +432,7 @@ databaseChangeLog:
         constraintName: user_authority_pkey
         tableName: user_authority
 - changeSet:
-    id: 60
+    id: 61
     author: yaasl
     changes:
     - addPrimaryKey:
@@ -405,7 +440,7 @@ databaseChangeLog:
         constraintName: yaasl_user_pkey
         tableName: yaasl_user
 - changeSet:
-    id: 61
+    id: 62
     author: yaasl
     changes:
     - addPrimaryKey:
@@ -413,7 +448,7 @@ databaseChangeLog:
         constraintName: feedback_pkey
         tableName: feedback
 - changeSet:
-    id: 62
+    id: 63
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -427,7 +462,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: pilot_role
 - changeSet:
-    id: 63
+    id: 64
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -441,7 +476,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: location
 - changeSet:
-    id: 64
+    id: 65
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -455,7 +490,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: yaasl_user
 - changeSet:
-    id: 65
+    id: 66
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -469,7 +504,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: aircraft
 - changeSet:
-    id: 66
+    id: 67
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -483,7 +518,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: yaasl_user
 - changeSet:
-    id: 67
+    id: 68
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -497,7 +532,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: pilot
 - changeSet:
-    id: 68
+    id: 69
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -511,7 +546,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: authority
 - changeSet:
-    id: 69
+    id: 70
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -525,7 +560,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: pilot
 - changeSet:
-    id: 70
+    id: 71
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -539,7 +574,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: location
 - changeSet:
-    id: 71
+    id: 72
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -553,7 +588,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: pilot_role
 - changeSet:
-    id: 72
+    id: 73
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -567,7 +602,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: authority
 - changeSet:
-    id: 73
+    id: 74
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -581,7 +616,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: cost_sharing
 - changeSet:
-    id: 74
+    id: 75
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -595,7 +630,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: yaasl_user
 - changeSet:
-    id: 75
+    id: 76
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -609,7 +644,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: aircraft
 - changeSet:
-    id: 76
+    id: 77
     author: yaasl
     changes:
     - addForeignKeyConstraint:
@@ -623,7 +658,7 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: pilot_role
 - changeSet:
-    id: 77
+    id: 78
     author: yaasl
     changes:
     - addForeignKeyConstraint:
