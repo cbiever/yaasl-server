@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface LocationRepository extends CrudRepository<Location, Long> {
 
-    Location findByName(String name);
+    Location findByIcao(String name);
 
 }

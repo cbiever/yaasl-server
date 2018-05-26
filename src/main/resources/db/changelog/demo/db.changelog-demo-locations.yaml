@@ -9,8 +9,11 @@ databaseChangeLog:
               name: id
               value: 1
           - column:
+              name: icao
+              value: LSGB
+          - column:
               name: name
-              value: LSZB
+              value: Bex
         tableName: location
     - insert:
         columns:
@@ -18,8 +21,11 @@ databaseChangeLog:
               name: id
               value: 2
           - column:
+              name: icao
+              value: LSGC
+          - column:
               name: name
-              value: LSZW
+              value: Les Eplatures
         tableName: location
     - insert:
         columns:
@@ -27,8 +33,11 @@ databaseChangeLog:
               name: id
               value: 3
           - column:
+              name: icao
+              value: LSGE
+          - column:
               name: name
-              value: LSTB
+              value: Ecuvillens
         tableName: location
     - insert:
         columns:
@@ -36,6 +45,333 @@ databaseChangeLog:
               name: id
               value: 4
           - column:
+              name: icao
+              value: LSGG
+          - column:
               name: name
+              value: Genf
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 5
+          - column:
+              name: icao
+              value: LSGL
+          - column:
+              name: name
+              value: Lausanne
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 6
+          - column:
+              name: icao
+              value: LSGK
+          - column:
+              name: name
+              value: Saanen
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 7
+          - column:
+              name: icao
+              value: LSGS
+          - column:
+              name: name
+              value: Sion
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 8
+          - column:
+              name: icao
+              value: LSGT
+          - column:
+              name: name
+              value: Gruyère
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 9
+          - column:
+              name: icao
+              value: LSGY
+          - column:
+              name: name
+              value: Yverdon-les-Bains
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 10
+          - column:
+              name: icao
+              value: LSPL
+          - column:
+              name: name
+              value: Langenthal
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 11
+          - column:
+              name: icao
+              value: LSPM
+          - column:
+              name: name
+              value: Ambri
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 12
+          - column:
+              name: icao
+              value: LSTB
+          - column:
+              name: name
+              value: Bellechasse
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 13
+          - column:
+              name: icao
               value: LSTR
+          - column:
+              name: name
+              value: Montricher
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 14
+          - column:
+              name: icao
+              value: LSTS
+          - column:
+              name: name
+              value: St. Stephan
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 15
+          - column:
+              name: icao
+              value: LSTO
+          - column:
+              name: name
+              value: Môtiers
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 16
+          - column:
+              name: icao
+              value: LSTZ
+          - column:
+              name: name
+              value: Zweisimmen
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 17
+          - column:
+              name: icao
+              value: LSZA
+          - column:
+              name: name
+              value: Lugano
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 18
+          - column:
+              name: icao
+              value: LSZB
+          - column:
+              name: name
+              value: Bern
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 19
+          - column:
+              name: icao
+              value: LSZC
+          - column:
+              name: name
+              value: Buochs
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 20
+          - column:
+              name: icao
+              value: LSZE
+          - column:
+              name: name
+              value: Bad Ragaz
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 21
+          - column:
+              name: icao
+              value: LSZF
+          - column:
+              name: name
+              value: Birrfeld
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 22
+          - column:
+              name: icao
+              value: LSZG
+          - column:
+              name: name
+              value: Grenchen
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 23
+          - column:
+              name: icao
+              value: LSZI
+          - column:
+              name: name
+              value: Fricktal-Schupfart
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 24
+          - column:
+              name: icao
+              value: LSZJ
+          - column:
+              name: name
+              value: Courtelary
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 25
+          - column:
+              name: icao
+              value: LSZL
+          - column:
+              name: name
+              value: Locarno
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 26
+          - column:
+              name: icao
+              value: LSZM
+          - column:
+              name: name
+              value: Basel-Mulhouse
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 27
+          - column:
+              name: icao
+              value: LSZN
+          - column:
+              name: name
+              value: Hausen am Albis
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 28
+          - column:
+              name: icao
+              value: LSZP
+          - column:
+              name: name
+              value: Biel-Kappelen
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 29
+          - column:
+              name: icao
+              value: LSZR
+          - column:
+              name: name
+              value: St. Gallen-Altenrhein
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 30
+          - column:
+              name: icao
+              value: LSZS
+          - column:
+              name: name
+              value: Samedan
+        tableName: location
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 31
+          - column:
+              name: icao
+              value: LSZW
+          - column:
+              name: name
+              value: Thun
         tableName: location

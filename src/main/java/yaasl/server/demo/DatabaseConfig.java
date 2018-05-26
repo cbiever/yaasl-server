@@ -43,8 +43,8 @@ public class DatabaseConfig {
         Date now = new Date();
 
         Flight flight = new Flight();
-        flight.setStartLocation(locationRepository.findByName("LSZW"));
-        flight.setLandingLocation(locationRepository.findByName("LSZW"));
+        flight.setStartLocation(locationRepository.findByIcao("LSZW"));
+        flight.setLandingLocation(locationRepository.findByIcao("LSZW"));
         flight.setAircraft(getAircraft(1L));
         flight.setPilot1(getPilot(1L));
         flight.setPilot2(getPilot(2L));
@@ -55,8 +55,8 @@ public class DatabaseConfig {
         flightRepository.save(flight);
 
         flight = new Flight();
-        flight.setStartLocation(locationRepository.findByName("LSZW"));
-        flight.setLandingLocation(locationRepository.findByName("LSZW"));
+        flight.setStartLocation(locationRepository.findByIcao("LSZW"));
+        flight.setLandingLocation(locationRepository.findByIcao("LSZW"));
         flight.setAircraft(getAircraft(2L));
         flight.setPilot1(getPilot(3L));
         flight.setPilot2(getPilot(4L));
@@ -67,8 +67,8 @@ public class DatabaseConfig {
         flightRepository.save(flight);
 
         flight = new Flight();
-        flight.setStartLocation(locationRepository.findByName("LSZB"));
-        flight.setLandingLocation(locationRepository.findByName("LSZB"));
+        flight.setStartLocation(locationRepository.findByIcao("LSZB"));
+        flight.setLandingLocation(locationRepository.findByIcao("LSZB"));
         flight.setAircraft(getAircraft(3L));
         flight.setPilot1(getPilot(5L));
         flight.setPilot2(getPilot(6L));
@@ -79,8 +79,8 @@ public class DatabaseConfig {
         flightRepository.save(flight);
 
         flight = new Flight();
-        flight.setStartLocation(locationRepository.findByName("LSZB"));
-        flight.setLandingLocation(locationRepository.findByName("LSZB"));
+        flight.setStartLocation(locationRepository.findByIcao("LSZB"));
+        flight.setLandingLocation(locationRepository.findByIcao("LSZB"));
         flight.setAircraft(getAircraft(4L));
         flight.setPilot1(getPilot(7L));
         flight.setPilot2(getPilot(8L));
@@ -91,8 +91,8 @@ public class DatabaseConfig {
         flightRepository.save(flight);
 
         flight = new Flight();
-        flight.setStartLocation(locationRepository.findByName("LSTB"));
-        flight.setLandingLocation(locationRepository.findByName("LSTB"));
+        flight.setStartLocation(locationRepository.findByIcao("LSTB"));
+        flight.setLandingLocation(locationRepository.findByIcao("LSTB"));
         flight.setAircraft(getAircraft(5L));
         flight.setPilot1(getPilot(7L));
         flight.setPilot2(getPilot(8L));
@@ -103,8 +103,8 @@ public class DatabaseConfig {
         flightRepository.save(flight);
 
         flight = new Flight();
-        flight.setStartLocation(locationRepository.findByName("LSTB"));
-        flight.setLandingLocation(locationRepository.findByName("LSTB"));
+        flight.setStartLocation(locationRepository.findByIcao("LSTB"));
+        flight.setLandingLocation(locationRepository.findByIcao("LSTB"));
         flight.setAircraft(getAircraft(6L));
         flight.setPilot1(getPilot(9L));
         flight.setStartTime(now);

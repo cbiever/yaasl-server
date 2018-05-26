@@ -74,6 +74,10 @@ public abstract class AbstractWebSecurity extends WebSecurityConfigurerAdapter {
                 .csrf()
                 .disable()
 
+                .headers().frameOptions().sameOrigin()
+
+                .and()
+
                 .authorizeRequests()
                 .antMatchers(POST, SIGN_UP_URL)
                 .permitAll()

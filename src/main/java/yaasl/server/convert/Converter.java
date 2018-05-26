@@ -31,6 +31,7 @@ public class Converter {
         element.setId(location.getId().toString());
         element.setType("location");
         if (includeAttributes) {
+            element.addAttribute("icao", location.getIcao());
             element.addAttribute("name", location.getName());
         }
         return element;

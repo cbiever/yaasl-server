@@ -41,7 +41,7 @@ public class CSVExporter {
         writer.append(",");
 
         if (flight.getStartLocation() != null) {
-            writer.append(flight.getStartLocation().getName());
+            writer.append(flight.getStartLocation().getIcao());
         }
         writer.append(",");
 
@@ -51,7 +51,7 @@ public class CSVExporter {
         writer.append(",");
 
         if (flight.getLandingLocation() != null) {
-            writer.append(flight.getLandingLocation().getName());
+            writer.append(flight.getLandingLocation().getIcao());
         }
         writer.append(",");
 

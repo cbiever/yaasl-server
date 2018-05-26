@@ -26,6 +26,7 @@ public class Flight {
     private boolean editable;
     private boolean locked;
     private long revision;
+    private int sequence;
 
     public Flight() {
     }
@@ -196,5 +197,14 @@ public class Flight {
     public void setRevision(long revision) {
         this.revision = revision;
     }
-    
+
+    @Transient
+    public int getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
+    }
+
 }

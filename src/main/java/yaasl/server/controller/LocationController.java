@@ -40,7 +40,7 @@ public class LocationController {
     public MultiData getLocations(@RequestParam("filter[location]") Optional<String> locationFilter) {
         List<Element> locations = new ArrayList<Element>();
         if (locationFilter.isPresent()) {
-            Location location = locationRepository.findByName(locationFilter.get().toUpperCase());
+            Location location = locationRepository.findByIcao(locationFilter.get().toUpperCase());
             if (location != null) {
                 locations.add(convert(location));
             }

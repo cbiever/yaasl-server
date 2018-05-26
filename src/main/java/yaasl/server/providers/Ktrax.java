@@ -23,7 +23,6 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.time.DateUtils.*;
 import static org.springframework.http.HttpStatus.OK;
 import static yaasl.server.convert.Converter.formatDate;
-import static yaasl.server.convert.Converter.parseDate;
 
 @Component
 public class Ktrax {
@@ -35,13 +34,13 @@ public class Ktrax {
 
     private JsonParser jsonParser = JsonParserFactory.getJsonParser();
 
-    public List<Flight> getFlights(String location, String date) {
+    public List<Flight> getFlights(Location location, Date date) {
         String url = ktraxURL + "?db=sortie&query_type=ap";
         if (location != null) {
-            url += "&id=" + location.toUpperCase();
+            url += "&id=" + location.getIcao();
         }
         if (date != null) {
-            Date dateBegin = parseDate(date);
+            Date dateBegin = date;
             url += "&dbeg=" + formatDate(dateBegin) + "&dend=" + formatDate(dateBegin);
         }
         RestTemplate restTemplate = new RestTemplate();
@@ -104,6 +103,8 @@ public class Ktrax {
     private Flight process(Map<String, Object> sortie, Date date) {
         Flight flight = new Flight();
 
+        flight.setSequence((Integer) sortie.get("seq"));
+
         int type = (sortie.get("type") != null ? (Integer) sortie.get("type") : 10);
         Aircraft aircraft = new Aircraft();
         aircraft.setCallSign((String) sortie.get("cs"));
@@ -117,13 +118,13 @@ public class Ktrax {
         Map<String, Object> tkof = (Map<String, Object>) sortie.get("tkof");
         flight.setStartTime(prepareDate((String) tkof.get("time"), date));
         Location startLocation = new Location();
-        startLocation.setName((String) tkof.get("loc"));
+        startLocation.setIcao((String) tkof.get("loc"));
         flight.setStartLocation(startLocation);
 
         Map<String, Object> ldg = (Map<String, Object>) sortie.get("ldg");
         flight.setLandingTime(prepareDate((String) ldg.get("time"), date));
         Location landingLocation = new Location();
-        landingLocation.setName((String) ldg.get("loc"));
+        landingLocation.setIcao((String) ldg.get("loc"));
         flight.setLandingLocation(landingLocation);
 
         return flight;

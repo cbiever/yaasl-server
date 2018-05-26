@@ -37,11 +37,14 @@ public class Broadcaster extends TextWebSocketHandler {
         sessions.remove(session);
     }
 
+    public void sendUpdate(Update update) {
+        sendUpdate(update, "-1");
+    }
+
     public void sendUpdate(Update update, String originatorID) {
         try {
             String json = objectMapper.writeValueAsString(update);
             sessions
-                    .stream()
                     .forEach(session -> {
                         try {
                             if (!session.getId().equals(originatorID)) {

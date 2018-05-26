@@ -345,3 +345,39 @@ databaseChangeLog:
               name: number_of_seats
               value: 1
         tableName: aircraft
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 20
+          - column:
+              name: call_sign
+              value: HB-1708
+          - column:
+              name: can_tow
+              value: false
+          - column:
+              name: needs_towing
+              value: true
+          - column:
+              name: number_of_seats
+              value: 2
+        tableName: aircraft
+    - insert:
+        columns:
+          - column:
+              name: id
+              value: 21
+          - column:
+              name: call_sign
+              value: HB-OLW
+          - column:
+              name: can_tow
+              value: true
+          - column:
+              name: needs_towing
+              value: false
+          - column:
+              name: number_of_seats
+              value: 2
+        tableName: aircraft

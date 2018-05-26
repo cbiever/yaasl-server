@@ -194,6 +194,9 @@ databaseChangeLog:
             name: id
             type: BIGINT
         - column:
+            name: icao
+            type: CHAR(4)
+        - column:
             name: name
             type: VARCHAR(255)
         tableName: location

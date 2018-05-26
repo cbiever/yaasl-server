@@ -128,7 +128,7 @@
                                     </fo:table-cell>
                                     <fo:table-cell>
                                         <fo:block>
-                                            <xsl:value-of select="./startLocation/name"/>
+                                            <xsl:value-of select="./startLocation/icao"/>
                                         </fo:block>
                                     </fo:table-cell>
                                     <fo:table-cell>
@@ -138,7 +138,7 @@
                                     </fo:table-cell>
                                     <fo:table-cell>
                                         <fo:block>
-                                            <xsl:value-of select="./landingLocation/name"/>
+                                            <xsl:value-of select="./landingLocation/icao"/>
                                         </fo:block>
                                     </fo:table-cell>
                                     <fo:table-cell>

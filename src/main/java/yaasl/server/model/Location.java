@@ -10,13 +10,10 @@ import static javax.persistence.GenerationType.AUTO;
 public class Location {
 
     private Long id;
+    private String icao;
     private String name;
 
     public Location() {
-    }
-
-    public Location(String name) {
-        this.name = name;
     }
 
     @Id
@@ -27,6 +24,14 @@ public class Location {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getIcao() {
+        return icao;
+    }
+
+    public void setIcao(String icao) {
+        this.icao = icao;
     }
 
     public String getName() {
