@@ -30,6 +30,7 @@ import static java.util.Calendar.MINUTE;
 import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.truncate;
 import static yaasl.server.convert.Converter.convert;
+import static yaasl.server.convert.Converter.parseDate;
 
 @Component
 @Listener(references = References.Strong)
@@ -66,8 +67,7 @@ public class KtraxObserver {
         mBassador.subscribe(this);
     }
 
-//    @Scheduled(cron = "${observer.cron}")
-@Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "${observer.cron}")
     private void observe() {
         Date today = new Date();
         if (locations != null) {
@@ -95,9 +95,6 @@ public class KtraxObserver {
                                 }
                             }
                         }
-else {
-    LOG.info("flight {} ignored", ktraxFlight.getSequence());
-}
                     });
                 }
                 else {
