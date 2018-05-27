@@ -79,18 +79,20 @@ public class KtraxObserver {
                     ktraxFlights.forEach(ktraxFlight -> {
                         if (!deletedSequences.contains(ktraxFlight.getSequence())) {
                             Flight flight = findMatchingFlight(ktraxFlight, flights);
+                            boolean newFlight = false;
                             if (flight == null && ktraxFlight.getAircraft() != null) {
                                 Aircraft aircraft = aircraftRepository.findAircraftByCallSign(ktraxFlight.getAircraft().getCallSign());
                                 if (aircraft != null) {
                                     flight = new Flight();
                                     flight.setAircraft(aircraft);
                                     flight.setEditable(true);
+                                    newFlight = true;
                                 }
                             }
                             if (flight != null) {
                                 boolean broadcast = merge(flight, ktraxFlight);
                                 if (broadcast) {
-                                    Update update = new Update("update", convert(flight));
+                                    Update update = new Update(newFlight ? "add" : "update", convert(flight));
                                     broadcaster.sendUpdate(update);
                                 }
                             }
