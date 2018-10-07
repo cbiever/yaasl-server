@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import yaasl.server.model.Authority;
-import yaasl.server.model.TemporaryAuthority;
 import yaasl.server.model.User;
 import yaasl.server.persistence.TemporaryAuthorityRepository;
 import yaasl.server.persistence.UserRepository;
@@ -19,13 +18,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 import static java.lang.Boolean.parseBoolean;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static yaasl.server.security.SecurityConstants.*;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static yaasl.server.security.SecurityConstants.EXPIRATION_TIME;
+import static yaasl.server.security.SecurityConstants.TOKEN_PREFIX;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -95,7 +95,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .claim("roles", roles.toArray())
                 .signWith(HS512, jwtSecret.getBytes())
                 .compact();
-        response.addHeader(TOKEN_HEADER, TOKEN_PREFIX + token);
+        response.addHeader(AUTHORIZATION, TOKEN_PREFIX + token);
     }
 
 }

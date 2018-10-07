@@ -33,6 +33,7 @@ import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.time.DateUtils.addDays;
 import static org.apache.commons.lang3.time.DateUtils.truncate;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.*;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -120,15 +121,15 @@ public class FlightsController {
             HttpHeaders headers = new HttpHeaders();
             byte[] data = null;
             if (!format.isPresent() || "application/vnd.api+json".equals(format.get())) {
-                headers.add("Content-Type", "application/vnd.api+json");
+                headers.add(CONTENT_TYPE, "application/vnd.api+json");
                 data = objectMapper.writeValueAsBytes(new MultiData(flights.stream().map(flight -> convert(flight)).collect(toList())));
             }
             else if (format.isPresent() && "csv".equals(format.get())) {
-                headers.add("Content-Type", "text/csv");
+                headers.add(CONTENT_TYPE, "text/csv");
                 data = csvExporter.generate(flights);
             }
             else if (format.isPresent() && "pdf".equals(format.get())) {
-                headers.add("Content-Type", "application/pdf");
+                headers.add(CONTENT_TYPE, "application/pdf");
                 data = Base64.getEncoder().encode(pdfExporter.generate(flights, location, date, translations));
             }
             return new ResponseEntity<byte[]>(data, headers, OK);

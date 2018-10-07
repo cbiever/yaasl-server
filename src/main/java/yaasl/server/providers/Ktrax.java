@@ -103,7 +103,7 @@ public class Ktrax {
     private Flight process(Map<String, Object> sortie, Date date) {
         Flight flight = new Flight();
 
-        flight.setSequence((Integer) sortie.get("seq"));
+        flight.setSequence((Long) sortie.get("seq"));
 
         int type = (sortie.get("type") != null ? (Integer) sortie.get("type") : 10);
         Aircraft aircraft = new Aircraft();

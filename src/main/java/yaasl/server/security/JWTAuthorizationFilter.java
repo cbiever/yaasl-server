@@ -22,9 +22,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static yaasl.server.security.SecurityConstants.*;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.web.socket.WebSocketHttpHeaders.SEC_WEBSOCKET_PROTOCOL;
+import static yaasl.server.security.SecurityConstants.TOKEN_PREFIX;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -47,16 +48,16 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     private String getToken(HttpServletRequest request, HttpServletResponse response) {
-        String header = request.getHeader(TOKEN_HEADER);
+        String header = request.getHeader(AUTHORIZATION);
         if (header == null) {
-            header = request.getHeader(WEB_SOCKET_TOKEN_HEADER);
+            header = request.getHeader(SEC_WEBSOCKET_PROTOCOL);
             if (isNotEmpty(header)) {
                 for (String webSocketHeader : header.split(",")) {
                     if (jwtPattern.matcher(webSocketHeader).matches()) {
                         header = webSocketHeader;
                     }
                     else {
-                        response.addHeader(WEB_SOCKET_TOKEN_HEADER, webSocketHeader);
+                        response.addHeader(SEC_WEBSOCKET_PROTOCOL, webSocketHeader);
                     }
                 }
             }

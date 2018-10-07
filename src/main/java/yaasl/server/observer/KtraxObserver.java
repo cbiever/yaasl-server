@@ -57,7 +57,7 @@ public class KtraxObserver {
     private MBassador mBassador;
 
     private List<Flight> flights = new ArrayList<Flight>();
-    private List<Integer> deletedSequences = new ArrayList<Integer>();
+    private List<Long> deletedSequences = new ArrayList<Long>();
 
     @Value("#{'${observer.locations}'.split(',')}")
     private List<String> locations;

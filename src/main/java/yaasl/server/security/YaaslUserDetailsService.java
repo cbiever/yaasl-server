@@ -1,12 +1,9 @@
 package yaasl.server.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.stereotype.Component;
@@ -16,14 +13,12 @@ import yaasl.server.model.User;
 import yaasl.server.persistence.RememberMeTokenRepository;
 import yaasl.server.persistence.UserRepository;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.Set;
 
-import static yaasl.server.security.UserService.ENCRYPTION_METHOD.BCRYPT;
+import static yaasl.server.security.YaaslUserDetailsService.ENCRYPTION_METHOD.BCRYPT;
 
 @Component
-public class UserService implements UserDetailsService, PersistentTokenRepository {
+public class YaaslUserDetailsService implements UserDetailsService, PersistentTokenRepository {
 
     public enum ENCRYPTION_METHOD { MD5, BCRYPT };
 

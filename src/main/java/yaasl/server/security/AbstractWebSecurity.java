@@ -5,10 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -18,13 +16,8 @@ import yaasl.server.persistence.UserRepository;
 
 import javax.annotation.PostConstruct;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static yaasl.server.security.SecurityConstants.SIGN_UP_URL;
@@ -34,7 +27,7 @@ public abstract class AbstractWebSecurity extends WebSecurityConfigurerAdapter {
     private Logger LOG = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    protected UserService userService;
+    protected YaaslUserDetailsService yaaslUserDetailsService;
 
     @Autowired
     protected UserRepository userRepository;
@@ -74,7 +67,9 @@ public abstract class AbstractWebSecurity extends WebSecurityConfigurerAdapter {
                 .csrf()
                 .disable()
 
-                .headers().frameOptions().sameOrigin()
+                .headers()
+                    .frameOptions()
+                    .sameOrigin()
 
                 .and()
 
@@ -94,7 +89,7 @@ public abstract class AbstractWebSecurity extends WebSecurityConfigurerAdapter {
                         userRepository,
                         temporaryAuthorityRepository,
                         passwordEncoder,
-                        new RememberMeService(rememberMeKey, userService)))
+                        new RememberMeService(rememberMeKey, yaaslUserDetailsService)))
                 .addFilter(new JWTAuthorizationFilter(jwtSecret, authenticationManager()))
 
                 .sessionManagement()
@@ -109,7 +104,7 @@ public abstract class AbstractWebSecurity extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder
-                .userDetailsService(userService)
+                .userDetailsService(yaaslUserDetailsService)
                 .passwordEncoder(passwordEncoder);
     }
 
