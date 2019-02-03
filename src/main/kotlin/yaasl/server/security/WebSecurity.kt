@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.core.env.Environment
+import org.springframework.core.env.Profiles
 import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -92,7 +93,7 @@ class WebSecurity(@Value("\${security.jwt.secret:''}") private var jwtSecret: St
     }
 
     fun permitAllUrls(): Array<String> {
-        if (environment.acceptsProfiles("demo")) {
+        if (environment.acceptsProfiles(Profiles.of("demo"))) {
             return arrayOf("/h2-console/**", "/swagger-ui.html/**", "/swagger-resources/**", "/v2/api-docs/**", "/webjars/**")
         } else {
             return emptyArray()

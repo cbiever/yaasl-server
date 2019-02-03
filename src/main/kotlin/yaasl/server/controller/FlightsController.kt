@@ -230,7 +230,7 @@ class FlightsController(
                         LOG.error("Unable to lock flight {}", flight.id, e)
                     }
                 }
-                return ok<Nothing>(null)
+                return ok(null)
             } else {
                 return status(UNAUTHORIZED).body<Any>(null)
             }
@@ -249,7 +249,7 @@ class FlightsController(
     @RequestMapping(value = ["/ktrax"], method = [GET], produces = ["application/json"])
     fun getKtraxLogbook(@RequestParam("location") locationName: Optional<String>, @RequestParam("date") date: Optional<String>): ResponseEntity<List<Flight>> {
         if (locationName.isPresent) {
-            val location = locationRepository.findByIcao(locationName.get())
+            val location = locationRepository.findByIcao(locationName.get().toUpperCase())
             if (location != null) {
                 return ok(ktrax.getFlights(location, if (date.isPresent) parseDate(date.get()) else null))
             }

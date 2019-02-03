@@ -39,7 +39,7 @@ class JWTAuthorizationFilter(private val jwtSecret: String,
         var header: String? = request.getHeader(AUTHORIZATION)
         if (header == null) {
             header = request.getHeader(SEC_WEBSOCKET_PROTOCOL)
-            if (header.isNotEmpty()) {
+            if (header != null && header.isNotEmpty()) {
                 for (webSocketHeader in header?.split(",".toRegex())?.dropLastWhile({ it.isEmpty() })!!.toTypedArray()) {
                     if (jwtPattern.matcher(webSocketHeader).matches()) {
                         header = webSocketHeader

@@ -18,7 +18,8 @@ import java.util.Calendar.MINUTE
 import java.util.Collections.emptyList
 
 @Component
-class Ktrax(@Value("\${provider.ktrax.url}") private val ktraxURL: String) {
+class Ktrax(@Value("\${provider.ktrax.url}") private val ktraxURL: String,
+            private val restTemplate: RestTemplate) {
 
     private val LOG = LoggerFactory.getLogger(javaClass)
     private val jsonParser = JsonParserFactory.getJsonParser()
@@ -31,7 +32,6 @@ class Ktrax(@Value("\${provider.ktrax.url}") private val ktraxURL: String) {
         if (date != null) {
             url += "&dbeg=" + formatDate(date) + "&dend=" + formatDate(date)
         }
-        val restTemplate = RestTemplate()
         val response = restTemplate.getForEntity<String>(url, String::class.java)
         if (response.statusCode == OK) {
             return process(response.body, Date())
