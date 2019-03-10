@@ -2,6 +2,7 @@ package yaasl.server.model
 
 import java.util.*
 import javax.persistence.*
+import javax.persistence.TemporalType.DATE
 import javax.persistence.GenerationType.AUTO
 
 @Entity
@@ -11,7 +12,7 @@ class TemporaryAuthority(@get:Id
                          @get:ManyToOne
                          @get:JoinColumn(name = "authority_id")
                          var authority: Authority? = null,
-                         @get:Temporal(TemporalType.DATE)
+                         @get:Temporal(DATE)
                          var date: Date? = null,
                          @get:ManyToOne
                          @get:JoinColumn(name = "user_id")

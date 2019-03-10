@@ -36,15 +36,14 @@ import kotlin.streams.toList
 
 @RestController
 @RequestMapping("/rs/flights")
-class FlightsController(
-        private val flightRepository: FlightRepository,
-        private val locationRepository: LocationRepository,
-        private val costSharingRepository: CostSharingRepository,
-        private val csvExporter: CSVExporter,
-        private val pdfExporter: PDFExporter,
-        private val broadcaster: Broadcaster,
-        private val ktrax: Ktrax,
-        private val mBassador: MBassador<Any>) {
+class FlightsController(private val flightRepository: FlightRepository,
+                        private val locationRepository: LocationRepository,
+                        private val costSharingRepository: CostSharingRepository,
+                        private val csvExporter: CSVExporter,
+                        private val pdfExporter: PDFExporter,
+                        private val broadcaster: Broadcaster,
+                        private val ktrax: Ktrax,
+                        private val mBassador: MBassador<Any>) {
 
     private val LOG = LoggerFactory.getLogger(javaClass)
     private val objectMapper = ObjectMapper()

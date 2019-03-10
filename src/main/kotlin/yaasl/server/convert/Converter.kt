@@ -144,7 +144,6 @@ object Converter {
         return element
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun <T> convert(element: Element): T? {
         val attributes = element.getAttributes()
         when (element.getType()) {
@@ -188,14 +187,12 @@ object Converter {
         } catch (e: ParseException) {
             return null
         }
-
     }
 
     fun formatDate(date: Date): String {
         return dateFormat.format(date)
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun convertLocation(json: Map<String, Any>?): Location? {
         if (json != null) {
             val location = Location()
@@ -206,7 +203,6 @@ object Converter {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun convertAircraft(json: Map<String, Any>?): Aircraft? {
         if (json != null) {
             val aircraft = Aircraft()
@@ -217,7 +213,6 @@ object Converter {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun convertPilot(json: Map<String, Any>?): Pilot? {
         if (json != null) {
             val pilot = Pilot()
@@ -228,7 +223,6 @@ object Converter {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun convertPilotRole(json: Map<String, Any>?): PilotRole? {
         if (json != null) {
             val pilotRole = PilotRole()
@@ -239,7 +233,6 @@ object Converter {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun convertCostSharing(json: Map<String, Any>?): CostSharing? {
         if (json != null) {
             val costSharing = CostSharing()
@@ -250,7 +243,6 @@ object Converter {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun getRelationship(name: String, element: Element): Map<String, Any>? {
         for ((key, value) in element.getRelationships() as Map<String, Any>) {
             if (name == key) {
@@ -273,7 +265,6 @@ object Converter {
         return date
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun <T> getAttribute(attributeName: String, defaultValue: T?, attributes: Map<String, Any?>): T? {
         return if (attributes[attributeName] != null) {
             attributes[attributeName] as T

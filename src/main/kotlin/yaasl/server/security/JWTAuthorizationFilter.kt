@@ -5,13 +5,10 @@ import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureException
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpHeaders.AUTHORIZATION
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
-import org.springframework.stereotype.Component
+import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.socket.WebSocketHttpHeaders.SEC_WEBSOCKET_PROTOCOL
 import yaasl.server.model.Authority
 import yaasl.server.security.SecurityConstants.TOKEN_PREFIX
@@ -21,8 +18,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import kotlin.streams.toList
 
-class JWTAuthorizationFilter(private val jwtSecret: String,
-                             private val authenticationManager: AuthenticationManager) : BasicAuthenticationFilter(authenticationManager) {
+class JWTAuthorizationFilter(private val jwtSecret: String) : OncePerRequestFilter() {
 
     private val LOG = LoggerFactory.getLogger(javaClass)
     private val jwtPattern = Pattern.compile("[\\w-]+\\.[\\w-]+\\.[\\w-]+")
@@ -36,23 +32,34 @@ class JWTAuthorizationFilter(private val jwtSecret: String,
     }
 
     private fun getToken(request: HttpServletRequest, response: HttpServletResponse): String? {
-        var header: String? = request.getHeader(AUTHORIZATION)
-        if (header == null) {
-            header = request.getHeader(SEC_WEBSOCKET_PROTOCOL)
-            if (header != null && header.isNotEmpty()) {
-                for (webSocketHeader in header?.split(",".toRegex())?.dropLastWhile({ it.isEmpty() })!!.toTypedArray()) {
-                    if (jwtPattern.matcher(webSocketHeader).matches()) {
-                        header = webSocketHeader
-                    } else {
-                        response.addHeader(SEC_WEBSOCKET_PROTOCOL, webSocketHeader)
-                    }
+        var token = getTokenFromWebsocketHeader(request)
+        if (token != null) {
+            response.addHeader(SEC_WEBSOCKET_PROTOCOL, "Yaasl")
+        } else {
+            token = getTokenFromCookie(request)
+            if (token == null) {
+                token = getTokenFromAuthorizationHeader(request)
+            }
+        }
+        return token
+    }
+
+    private fun getTokenFromCookie(request: HttpServletRequest): String? = request.cookies?.filter { cookie -> cookie.name == "yaasl" }?.firstOrNull()?.value
+
+    private fun getTokenFromAuthorizationHeader(request: HttpServletRequest): String? = request.getHeader(AUTHORIZATION)?.replace(TOKEN_PREFIX, "")
+
+    private fun getTokenFromWebsocketHeader(request: HttpServletRequest): String? {
+        val header = request.getHeader(SEC_WEBSOCKET_PROTOCOL)
+        if (header != null && header.isNotEmpty()) {
+            for (webSocketHeader in header.split(",")) {
+                if (jwtPattern.matcher(webSocketHeader).matches()) {
+                    return webSocketHeader.replace(TOKEN_PREFIX, "")
                 }
             }
         }
-        return header?.replace(TOKEN_PREFIX, "")
+        return null
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun getAuthentication(token: String?): UsernamePasswordAuthenticationToken? {
         var authenticationToken: UsernamePasswordAuthenticationToken? = null
         try {
@@ -80,10 +87,6 @@ class JWTAuthorizationFilter(private val jwtSecret: String,
             LOG.error("Invalid JWT token")
         }
         return authenticationToken
-    }
-
-    override fun getAuthenticationManager(): AuthenticationManager {
-        return authenticationManager
     }
 
 }

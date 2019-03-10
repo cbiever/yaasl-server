@@ -41,7 +41,6 @@ class Ktrax(@Value("\${provider.ktrax.url}") private val ktraxURL: String,
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun process(json: String?, date: Date): List<Flight> {
         val data = jsonParser.parseMap(json)
         val sorties = data["sorties"] as List<Map<String, Any>>
@@ -83,7 +82,6 @@ class Ktrax(@Value("\${provider.ktrax.url}") private val ktraxURL: String,
         return null
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun process(sortie: Map<String, Any>, date: Date): Flight {
         val flight = Flight()
 

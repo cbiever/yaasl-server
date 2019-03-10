@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy.STATELESS
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -68,7 +69,7 @@ class WebSecurity(@Value("\${security.jwt.secret:''}") private var jwtSecret: St
 
                 .and()
                 .addFilter(jwtAuthenticationFilter())
-                .addFilter(jwtAuthorizationFilter())
+                .addFilterAfter(jwtAuthorizationFilter(), BasicAuthenticationFilter::class.java)
 
                 .sessionManagement()
                 .sessionCreationPolicy(STATELESS)
@@ -101,22 +102,20 @@ class WebSecurity(@Value("\${security.jwt.secret:''}") private var jwtSecret: St
     }
 
     private fun jwtAuthenticationFilter() = JWTAuthenticationFilter(
-            jwtSecret,
             authenticationManager(),
+            jwtSecret,
             userRepository,
             temporaryAuthorityRepository,
             passwordEncoder,
             rememberMeService())
 
-    private fun jwtAuthorizationFilter() = JWTAuthorizationFilter(jwtSecret, authenticationManager())
+    private fun jwtAuthorizationFilter() = JWTAuthorizationFilter(jwtSecret)
 
-    private fun rememberMeService(): PersistentTokenBasedRememberMeServices {
-        val rememberMeService = PersistentTokenBasedRememberMeServices(rememberMeKey, yaaslUserDetailsService, yaaslUserDetailsService)
-        rememberMeService.parameter = "rememberMe"
-        rememberMeService.setCookieName(REMEMBER_ME_COOKIE)
-        rememberMeService.setTokenValiditySeconds(REMEMBER_ME_EXPIRATION_TIME)
-        rememberMeService.setUseSecureCookie(true)
-        return rememberMeService
+    private fun rememberMeService() = PersistentTokenBasedRememberMeServices(rememberMeKey, yaaslUserDetailsService, yaaslUserDetailsService).apply {
+        parameter = "rememberMe";
+        setCookieName(REMEMBER_ME_COOKIE);
+        setTokenValiditySeconds(REMEMBER_ME_EXPIRATION_TIME)
+        setUseSecureCookie(true)
     }
 
 }
