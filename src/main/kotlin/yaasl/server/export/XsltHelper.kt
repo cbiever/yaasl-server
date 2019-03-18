@@ -3,7 +3,6 @@ package yaasl.server.export
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import java.text.SimpleDateFormat
-import javax.xml.bind.DatatypeConverter.parseBase64Binary
 import javax.xml.bind.DatatypeConverter.parseDateTime
 
 class XsltHelper {
@@ -19,7 +18,7 @@ class XsltHelper {
     fun translate(key: String, translationsMap: String): String {
         var translation = key
         try {
-            val translations = ObjectMapper().readValue(parseBase64Binary(translationsMap), Map::class.java)
+            val translations = ObjectMapper().readValue(translationsMap, Map::class.java)
             if (translations.containsKey(key)) {
                 translation = translations.get(key) as String
             }

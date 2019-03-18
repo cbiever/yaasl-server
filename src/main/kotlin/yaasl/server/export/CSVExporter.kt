@@ -1,21 +1,17 @@
 package yaasl.server.export
 
-import org.slf4j.Logger
+import org.apache.commons.lang3.StringUtils.isNotEmpty
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import yaasl.server.model.Flight
-
 import java.io.StringWriter
 import java.text.SimpleDateFormat
-
-import org.apache.commons.lang3.StringUtils.isNotEmpty
 
 @Component
 class CSVExporter {
 
     private val LOG = LoggerFactory.getLogger(javaClass)
 
-    @Throws(Exception::class)
     fun generate(flights: List<Flight>): ByteArray {
         val writer = StringWriter()
         flights.forEach { flight -> addFlight(flight, writer) }

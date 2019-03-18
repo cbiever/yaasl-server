@@ -23,7 +23,6 @@ class PDFExporter {
 
     private val LOG = LoggerFactory.getLogger(javaClass)
 
-    @Throws(Exception::class)
     fun generate(flights: List<Flight>, location: Optional<String>, date: Optional<String>, translations: Optional<String>): ByteArray? {
         val xml = xml(flights, if (location.isPresent) location.get().toUpperCase() else null, if (date.isPresent) parseDate(date.get()) else null)
         val factory = FopFactoryBuilder(URI.create(".")).build()

@@ -11,9 +11,7 @@ import org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import yaasl.server.security.SecurityConstants
 import yaasl.server.security.SecurityConstants.TOKEN_PREFIX
-import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 
 @RestController
@@ -39,7 +37,8 @@ class AuthorizationController {
             ApiResponse(code = 403, message = "Forbidden")))
     @PostMapping("/logoff")
     fun logoff(response: HttpServletResponse) {
-        response.addCookie(Cookie("yaasl", "invalid").apply { isHttpOnly = true; secure = true; maxAge = 0 })
+// attempt to delete cookie triggered by server
+//        response.addCookie(Cookie("yaasl", "invalid").apply { maxAge = 0 })
     }
 
 }

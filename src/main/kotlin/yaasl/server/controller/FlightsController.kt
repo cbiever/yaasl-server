@@ -107,7 +107,7 @@ class FlightsController(private val flightRepository: FlightRepository,
                 data = csvExporter.generate(flights)
             } else if (format.isPresent && "pdf" == format.get()) {
                 headers.add(CONTENT_TYPE, "application/pdf")
-                data = Base64.getEncoder().encode(pdfExporter.generate(flights, location, date, translations))
+                data = pdfExporter.generate(flights, location, date, translations)
             }
             return ResponseEntity<ByteArray>(data, headers, OK)
         } catch (e: Exception) {
